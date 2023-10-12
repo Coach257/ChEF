@@ -1,0 +1,3 @@
+model_name: LLaVA
+model_path: /mnt/petrelfs/shizhelun/shizhelun/data/checkpoints/LLaVA/LLaVA-Lightning-MPT-7B-preview
+vis_processor_path: /mnt/petrelfs/shizhelun/shizhelun/data/checkpoints/clip-vit-large-patch14
