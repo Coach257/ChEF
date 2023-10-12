@@ -6,7 +6,7 @@ eval_cfg:
   instruction_cfg: 
     prompt_type: standard_query
     incontext_cfg:
-      retriever_type: topk_image
+      retriever_type: topk_img
       ice_num: 3
       use_pic: False
       add_sysmsg: True
@@ -14,7 +14,7 @@ eval_cfg:
       mult_conversations: False
       random_seed: 1
   inferencer_cfg:
-    inferencer_type: ICL_PPL
+    inferencer_type: ICL_Direct
     batch_size: 8
   metric_cfg:
     metric_type: basic

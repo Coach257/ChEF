@@ -2,4 +2,4 @@ model: configs/models/llava.yaml
 
 save_dir: results
 
-recipe: configs/scenario_recipes/VOC2012/default.yaml
+recipe: configs/scenario_recipes/CIFAR10/icl.yaml
