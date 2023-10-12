@@ -41,7 +41,9 @@ class InstructionHandler:
             return prompts_for_answer, Lecture
         
 
-    def generate_ppl_query(self, prompts, batch, batch_options, ices = None, CoT = None):
+    def generate_ppl_query(self, prompts, batch, batch_options, answer_template = None, ices = None, CoT = None):
+        if answer_template is None:
+            answer_template = self.answer_template
         '''
             if batch_option is list: ["(A) xxx", "(B) xxx"]
             if batch_option is dict: multi_turn_ppl dict(fore_label = "fore_label", options = ["(A) xxx", "(B) xxx"])
@@ -59,7 +61,7 @@ class InstructionHandler:
 
         for i in range(batch_size):
             if isinstance(batch_options[0], list):
-                answers += [self.answer_template.format(option) for option in batch_options[i]]
+                answers += [answer_template.format(option) for option in batch_options[i]]
                 new_len = len(batch_options[i])
                 questions += [prompts[i] for _ in range(new_len)]
                 options += batch_options[i]
@@ -71,7 +73,7 @@ class InstructionHandler:
                         options = [a, b, c, d]
                     )
                 '''
-                answers += [self.answer_template.format(option) for option in batch_options[i]['options']]
+                answers += [answer_template.format(option) for option in batch_options[i]['options']]
                 new_len = len(batch_options[i]['options'])
                 questions += [prompts.format(batch_options[i]['fore_label']) for _ in range(new_len)]
                 options += batch_options[i]['options']
@@ -96,7 +98,13 @@ class InstructionHandler:
         ice_idx = self.ice_idx_list[batch_idx * batch_size : (batch_idx+1) * batch_size]
         ices = self.retriever.genetate_ice(ice_idx, prompts)
         return ices
-     
+
+    def generate_multiturn_query(self, batch, turn_idx = 0, **kwargs):
+        if turn_idx == 0:
+            batch_size = len(batch['id'])
+            return self.generate_ppl_query([self.query[0]] * batch_size, batch, answer_template=self.answer_template[0], **kwargs)
+        else:
+            return self.generate_ppl_query(self.query[1], batch, answer_template=self.answer_template[1], **kwargs)
 
 def build_instructionhandler(task_name, 
                              dataset, 
@@ -106,7 +114,7 @@ def build_instructionhandler(task_name,
                              incontext_cfg = None,
                              **kwargs):
     assert query_type in supported_query_types, f'Supported query types are {supported_query_types}, got {query_type}'
-    
+
     query = build_query(task_name=task_name, query_type=query_type, assigned_ids=query_assigned_ids)
     template = build_template(task_name=task_name, assigned_ids=template_assigned_ids)
     handler = InstructionHandler(query, template, icl_cfg=incontext_cfg, dataset=dataset)

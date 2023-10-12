@@ -1,7 +1,7 @@
 from .classification import FG_Classification, CG_Classification
 # from .caption import  LAMM_Caption
 # from .vqa import  LAMM_VQA, MMBench, LAMM_VQA_Calibration, MMBench_Calibration, LAMM_VQA_INF,LAMM_VQA_CON,MME
-# from .detection import LAMM_Detection, KOSMOS_Detection 
+from .detection import Detection, KOSMOS_Detection 
 # from .counting import LAMM_Counting
 # from .pope import POPE_Metric
 
@@ -11,7 +11,7 @@ evaluation_protocol = {
         'fine_grained_classification': FG_Classification,
         # 'caption' : LAMM_Caption,
         # 'VQA': LAMM_VQA,
-        # 'detection': LAMM_Detection,
+        'detection': Detection,
         
         # 'counting': LAMM_Counting,
     },
@@ -38,9 +38,9 @@ evaluation_protocol = {
     # {
     #     'VQA': LAMM_VQA_CON
     # },
-    # 'KOSMOS':{
-    #     'detection': KOSMOS_Detection,
-    # },  
+    'KOSMOS':{
+        'detection': KOSMOS_Detection,
+    },  
     # 'MME':{
     #     'VQA': MME,
     # }

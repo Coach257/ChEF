@@ -1,10 +1,10 @@
 from .Direct import Direct_inferencer
-from .PPL import PPL_inferencer, ICL_PPL_inferencer
+from .PPL import PPL_inferencer, ICL_PPL_inferencer, Det_PPL_inferencer
 
 inferencer_dict = {
     'Direct': Direct_inferencer,
     # 'detection': Direct_inferencer,
-    # 'detection_ppl': Det_PPL_inferencer,
+    'Det_PPL': Det_PPL_inferencer,
     'PPL': PPL_inferencer,
     # 'multi_ppl': Multi_Turn_PPL_inferencer,
     # 'In_context_learning': Icl_inferencer,

@@ -76,7 +76,8 @@ class VOC2012Dataset(Dataset):
     def __init__(self, 
                  base_data_path = '/data/fanhongxing/data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/',
                  ppl_cfg = None,
-                 option_template = 'default'):
+                 option_template = 'default',
+                 **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,'meta_file', 'Detection_VOC2012.json')

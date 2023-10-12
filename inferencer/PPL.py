@@ -71,3 +71,52 @@ class ICL_PPL_inferencer(Direct_inferencer):
                 icl_prompt_idx += len(ppl_results)
 
         self._after_inference_step(predictions)
+
+
+class Det_PPL_inferencer(Direct_inferencer):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def inference(self, model, dataset):
+        predictions=[]
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, collate_fn=lambda batch: {key: [dict[key] for dict in batch] for key in batch[0]})
+        for batch in tqdm(dataloader, desc="Running inference"):
+            cur_batch_len = len(batch['image_path'])
+            
+            classification_num_turns = max([len(options) for options in batch['classification_options']])
+            classification_ppl_list = []
+            classification_ppl_batch_mask_list = []
+            for i in range(classification_num_turns):
+                batch_options = [(options[i] if len(options)>i else []) for options in batch['classification_options']]
+                image_path, cls_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_query(batch, turn_idx = 0, batch_options = batch_options)
+                outputs = model.ppl_inference(image_path, cls_questions, answers, answer_options)
+                classification_ppl_list.append(np.array(outputs))
+                classification_ppl_batch_mask_list.append(ppl_batch_mask)
+
+            grounding_num_turns = max([len(options) for options in batch['grounding_options']])
+            grounding_ppl_list = []
+            grounding_ppl_batch_mask_list = []
+            for i in range(grounding_num_turns):
+                batch_options = [(options[i] if len(options)>i else dict(fore_label = None, options = []) ) for options in batch['grounding_options']]
+                image_path, grd_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_query(batch, turn_idx = 1, batch_options = batch_options)
+                outputs = model.ppl_inference(image_path, grd_questions, answers, answer_options)
+                grounding_ppl_list.append(np.array(outputs))
+                grounding_ppl_batch_mask_list.append(ppl_batch_mask)
+
+            for idx in range(cur_batch_len):
+                answer_dict = copy_batch_dict(batch, idx)
+                answer_dict['query'] = cls_questions[ppl_batch_mask[idx].argmax()] + '\n' + grd_questions[ppl_batch_mask[idx].argmax()]
+                classification_ppl_results = [ppl_np[ppl_batch_mask[idx]] for ppl_np, ppl_batch_mask in zip(classification_ppl_list, classification_ppl_batch_mask_list)]
+                classification_ppl_results = [result for result in classification_ppl_results if len(result) > 0]
+                pred_answer_id_list = [ppl_result.argmin() for ppl_result in classification_ppl_results]
+                answer_dict['classification_ppl_results'] = [ppl_result.tolist() for ppl_result in classification_ppl_results]
+                answer_dict['classification_answer'] = [batch['classification_options'][idx][id][pred_answer_id] for (id, pred_answer_id) in enumerate(pred_answer_id_list)]
+                
+                grounding_ppl_results = [ppl_np[ppl_batch_mask[idx]] for ppl_np, ppl_batch_mask in zip(grounding_ppl_list, grounding_ppl_batch_mask_list)]
+                grounding_ppl_results = [result for result in grounding_ppl_results if len(result) > 0]
+                pred_answer_id_list = [ppl_result.argmin() for ppl_result in grounding_ppl_results]
+                answer_dict['grounding_ppl_results'] = [ppl_result.tolist() for ppl_result in grounding_ppl_results]
+                answer_dict['grounding_answer'] = [batch['grounding_options'][idx][id]['options'][pred_answer_id] for (id, pred_answer_id) in enumerate(pred_answer_id_list)]
+                predictions.append(answer_dict)
+
+        self._after_inference_step(predictions)
