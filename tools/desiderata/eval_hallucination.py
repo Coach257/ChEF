@@ -63,13 +63,9 @@ def main():
     # dataset
     scenario_cfg = recipe_cfg['scenario_cfg']
     
-    settings = [('natural',0), ('natural',1), ('natural',2), ('neutral',0), ('neutral',1) ,('unnatural',0)]
+    settings = ['POPE_COCO_random','POPE_COCO_popular','POPE_COCO_adversarial']
     for setting in settings:
-        ins_dict={
-                'type':setting[0],
-                'ids' : setting[1]
-                }
-        recipe_cfg['option_map']=ins_dict
+        scenario_cfg['dataset_name'] = 
         dataset_name = scenario_cfg['dataset_name']
         dataset = dataset_dict[dataset_name](**scenario_cfg)
         if args.debug:

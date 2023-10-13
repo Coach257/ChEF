@@ -4,7 +4,8 @@ scenario_cfg: # TODO
       base_data_path: data/datasets/LAMM/2D_Benchmark
       ppl: True
       option_content: False
-      option: '' # defined in code
+      img_crp: True
+      text_crp: True
 
 eval_cfg:
   instruction_cfg: 
