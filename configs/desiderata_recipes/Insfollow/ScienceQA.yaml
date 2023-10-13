@@ -3,6 +3,13 @@ scenario_cfg:
   base_data_path: data/datasets/LAMM/2D_Benchmark
   ppl: True
   option_content: False
+  option_map: ''
+    #type: natural
+    #      #natural,neutral,unneutral
+    #ids: 1
+    #perc: 1
+    #      sub_idx: /mnt/petrelfs/shizhelun/wangzp/code/LAMMdev/data_process/sqa_subid.json
+  
 
 eval_cfg:
   instruction_cfg: 
@@ -13,4 +20,6 @@ eval_cfg:
     CoT: True
     max_new_tokens: 256
   metric_cfg:
-    metric_type: Calibration
+    metric_type: Instruct_Follow
+
+

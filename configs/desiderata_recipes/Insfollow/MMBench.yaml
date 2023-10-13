@@ -1,7 +1,7 @@
 scenario_cfg: # TODO
   dataset_name: MMBench
     dataset_cfg:
-      base_data_path: /ssd/home/share_data/shizhelun/datasets/LAMM/2D_Benchmark
+      base_data_path: data/datasets/LAMM/2D_Benchmark
       ppl: True
       option_content: False
       option: '' # defined in code
