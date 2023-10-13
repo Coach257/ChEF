@@ -106,9 +106,3 @@ class MMEDataset(Dataset):
             if self.option_lower:
                 res_dict['options'] = ['yes', 'no'] # for instructblip
         return res_dict
-
-
-if __name__ == '__main__':
-    dataset = MMEDataset(base_data_path='/mnt/petrelfs/shizhelun/shizhelun/data/datasets/MME_Benchmark_release_version')
-    data = dataset[0]
-    import ipdb;ipdb.set_trace()
