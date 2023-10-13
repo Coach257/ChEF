@@ -1,4 +1,5 @@
 from .classification import FG_Classification, CG_Classification
+from .desiderata import MMBench_Calibration
 # from .caption import  LAMM_Caption
 # from .vqa import  LAMM_VQA, MMBench, LAMM_VQA_Calibration, MMBench_Calibration, LAMM_VQA_INF,LAMM_VQA_CON,MME
 from .detection import Detection, KOSMOS_Detection 
@@ -18,15 +19,15 @@ evaluation_protocol = {
     # 'MMBench':{
     #     'VQA': MMBench,
     # },
-    # 'Calibration':
-    # {
-    #     'VQA': LAMM_VQA_Calibration,
-    # },
+    'Calibration':
+    {
+        'VQA': Calibration,
+    },
     # 'MMBench_Calibration':
     # {
     #     'VQA': MMBench_Calibration,
     # },
-    # 'POPE':
+    # 'Hallucination':
     # {
     #     'POPE': POPE_Metric,
     # },

@@ -3,10 +3,12 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader
 from .utils import copy_batch_dict
 import numpy as np
+import torch
 
 class PPL_inferencer(Direct_inferencer):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, calib=False, **kwargs) -> None:
         super().__init__(**kwargs)
+        self.calib = calib
 
     def inference(self, model, dataset):
         predictions=[]
@@ -20,17 +22,28 @@ class PPL_inferencer(Direct_inferencer):
             
             batch_options = batch['options']
             image_path, questions, answers, ppl_batch_mask, answer_options, CoT_answer, _ = self.instruction_handler.generate_ppl_query(prompts, batch, batch_options, CoT = cot)
-            outputs = model.ppl_inference(image_path, questions, answers, answer_options, CoT_answer)
+            if self.calib:
+                outputs = model.cali_inference(image_path, questions, answers, answer_options, CoT_answer)
+            else:
+                outputs = model.ppl_inference(image_path, questions, answers, answer_options, CoT_answer)
 
             ppl_np = np.array(outputs)
             for idx in range(len(batch['image_path'])):
                 ppl_results = ppl_np[ppl_batch_mask[idx]]
-                pred_answer_id = ppl_results.argmin()
                 answer_dict = copy_batch_dict(batch, idx)
                 answer_dict['query'] = questions[ppl_batch_mask[idx].argmax()]
                 answer_dict['ppl_results'] = ppl_results.tolist()
                 if self.CoT:
                     answer_dict['CoT_answer'] = cot[idx]
+
+                if self.calib:
+                    score_tensor = torch.from_numpy(ppl_results)
+                    pred_answer_id = ppl_results.argmax()
+                    probs = score_tensor.softmax(dim=-1).tolist()
+                    answer_dict['probs'] = probs
+                    answer_dict['prob'] = max(probs)
+                else:
+                    pred_answer_id = ppl_results.argmin()
                 answer_dict['answer'] = batch['options'][idx][pred_answer_id]
                 predictions.append(answer_dict)
 
