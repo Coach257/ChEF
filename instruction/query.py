@@ -188,11 +188,14 @@ def multiturn_query_from_query_pool(
 def ppl_template(
         task_name, 
         assigned_ids = 0,
+        query_type = '', 
         **kwargs
     ):
     template_name = task_name + '_templates'
     template_pool = ppl_template_dict[template_name]
     template = template_pool[assigned_ids]
+    if query_type == 'multiturn' and isinstance(template, str): # each turn uses the same template
+        template = [template, template]
     return template
 
 query_func_dict = {

@@ -88,7 +88,7 @@ class Det_PPL_inferencer(Direct_inferencer):
             classification_ppl_batch_mask_list = []
             for i in range(classification_num_turns):
                 batch_options = [(options[i] if len(options)>i else []) for options in batch['classification_options']]
-                image_path, cls_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_query(batch, turn_idx = 0, batch_options = batch_options)
+                image_path, cls_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_ppl_query(batch, turn_idx = 0, batch_options = batch_options)
                 outputs = model.ppl_inference(image_path, cls_questions, answers, answer_options)
                 classification_ppl_list.append(np.array(outputs))
                 classification_ppl_batch_mask_list.append(ppl_batch_mask)
@@ -98,7 +98,7 @@ class Det_PPL_inferencer(Direct_inferencer):
             grounding_ppl_batch_mask_list = []
             for i in range(grounding_num_turns):
                 batch_options = [(options[i] if len(options)>i else dict(fore_label = None, options = []) ) for options in batch['grounding_options']]
-                image_path, grd_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_query(batch, turn_idx = 1, batch_options = batch_options)
+                image_path, grd_questions, answers, ppl_batch_mask, answer_options, _, _ = self.instruction_handler.generate_multiturn_ppl_query(batch, turn_idx = 1, batch_options = batch_options)
                 outputs = model.ppl_inference(image_path, grd_questions, answers, answer_options)
                 grounding_ppl_list.append(np.array(outputs))
                 grounding_ppl_batch_mask_list.append(ppl_batch_mask)

@@ -30,7 +30,7 @@ class CG_Classification(Base_Metric):
 
 class FG_Classification(Base_Metric):
     
-    def __init__(self, dataset_name, bamboo_tree_path = None, inference_type = 'direct', **kwargs):
+    def __init__(self, dataset_name, bamboo_tree_path, inference_type = 'direct', **kwargs):
         super().__init__(dataset_name)         
         self.bamboo_tree_path = bamboo_tree_path
         annot_data = json.load(open(self.bamboo_tree_path,'rb'))
@@ -42,6 +42,7 @@ class FG_Classification(Base_Metric):
                 name2id[name] = key
         self.name2id = name2id
         self.child2father = annot_data['child2father']
+        
         self.inference_type = inference_type
         assert self.inference_type in ['direct', 'single_ppl', 'multi_ppl']
 
@@ -72,6 +73,7 @@ class FG_Classification(Base_Metric):
             if gt[i] in pred:
                 deep_idx = i+1
             else:
+                # whether the class is the brother of the gt
                 father = self.name2id[gt[i-1]] if i>0 else self.child2father[self.name2id[gt[i-1]]][0]
                 if self.share_father(father, pred):
                     deep_idx = i
@@ -92,7 +94,7 @@ class FG_Classification(Base_Metric):
         wacc = wcorrect / len(answers) * 100
         return wacc
 
-class LAMM_Classification_WC(Base_Metric):
+class LAMM_Classification_WC(Base_Metric): # TODO
     def __init__(self, dataset_name, **kwargs):
         super().__init__(dataset_name)
         from .tools import classification_acc, VQAEval

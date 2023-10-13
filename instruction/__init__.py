@@ -13,13 +13,15 @@ class InstructionHandler:
             self.retriever.seed = icl_cfg['random_seed']
             self.ice_idx_list = self.retriever.retrieve()
 
-    def generate_basic_query(self, batch): # TODO: multiturn
+    def generate_basic_query(self, batch, query=None): # TODO: multiturn
+        if not query:
+            query = self.query
         cur_batch_len = len(batch['image_path'])
         if 'question' in batch:
             question = batch['question']
-            prompts = [f'{question[i]}{self.query}' for i in range(cur_batch_len)]
+            prompts = [f'{question[i]}{query}' for i in range(cur_batch_len)]
         else:
-            prompts = [self.query for _ in range(cur_batch_len)]
+            prompts = [query for _ in range(cur_batch_len)]
         return prompts
     
     def generate_CoT_query(self, model, batch):
@@ -99,12 +101,19 @@ class InstructionHandler:
         ices = self.retriever.genetate_ice(ice_idx, prompts)
         return ices
 
-    def generate_multiturn_query(self, batch, turn_idx = 0, **kwargs):
+    def generate_multiturn_ppl_query(self, batch, turn_idx=0, **kwargs):
         if turn_idx == 0:
             batch_size = len(batch['id'])
             return self.generate_ppl_query([self.query[0]] * batch_size, batch, answer_template=self.answer_template[0], **kwargs)
         else:
             return self.generate_ppl_query(self.query[1], batch, answer_template=self.answer_template[1], **kwargs)
+
+    def generate_multiturn_query(self, batch, turn_idx=0, **kwargs):
+        if turn_idx == 0:
+            return self.generate_basic_query(batch, query=self.query[0])
+        else:
+            return self.generate_basic_query(batch, query=self.query[1])
+        
 
 def build_instructionhandler(task_name, 
                              dataset, 
@@ -116,6 +125,6 @@ def build_instructionhandler(task_name,
     assert query_type in supported_query_types, f'Supported query types are {supported_query_types}, got {query_type}'
 
     query = build_query(task_name=task_name, query_type=query_type, assigned_ids=query_assigned_ids)
-    template = build_template(task_name=task_name, assigned_ids=template_assigned_ids)
+    template = build_template(task_name=task_name, assigned_ids=template_assigned_ids, query_type = query_type)
     handler = InstructionHandler(query, template, icl_cfg=incontext_cfg, dataset=dataset)
     return handler

@@ -60,13 +60,13 @@ class Det_Direct_inferencer(Direct_inferencer):
         self.check_label = classification_acc
 
     def inference(self, model, dataset):
-        classification_prompt = self.instruction_handler.query[0]
         bbox_prompt = self.instruction_handler.query[1]
         predictions=[]
         dataloader = DataLoader(dataset, batch_size=self.batch_size, collate_fn=lambda batch: {key: [dict[key] for dict in batch] for key in batch[0]})
 
         for batch in tqdm(dataloader, desc="Running inference"):
-            outputs = model.batch_generate(batch['image_path'], [classification_prompt for _ in range(len(batch['image_path']))],max_new_tokens=self.max_new_tokens)
+            prompts = self.instruction_handler.generate_multiturn_query(batch, turn_idx = 0)
+            outputs = model.batch_generate(batch['image_path'], prompts, max_new_tokens=self.max_new_tokens)
 
             res_dict_list = [dict() for i in range(len(batch['image_path']))]
             for idx, (gt_objects, pred_text) in enumerate(zip(batch['gt_answers'], outputs)):
@@ -79,7 +79,7 @@ class Det_Direct_inferencer(Direct_inferencer):
                         res_dict_list[idx][gt_object['label']] = pred_bbox
             for i in range(len(res_dict_list)):
                 answer_dict = copy_batch_dict(batch, i)
-                answer_dict['question'] = classification_prompt + '\n' + bbox_prompt
+                answer_dict['query'] = prompts[i] + '\n' + bbox_prompt
                 answer_dict['answer'] = res_dict_list[i]
                 answer_dict['classification_answer'] = outputs[i]
                 predictions.append(answer_dict)
