@@ -23,8 +23,7 @@ class Evaluator:
                                            **inferencer_cfg)
         
         metric_cfg = cfg['metric_cfg']
-        self.metric = build_metric(task_name=self.task_name, 
-                                   dataset_name=self.dataset_name, 
+        self.metric = build_metric(dataset_name=self.dataset_name, 
                                    **metric_cfg)
         
         

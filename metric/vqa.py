@@ -99,16 +99,13 @@ class VQA(Base_Metric):
             match_ratio = self.match /(len(answers)) * 100
         )
 
-class MMBench(Base_Metric):
+class MMBenchVQA(Base_Metric):
     def __init__(self, dataset_name, content_only = False):
         super().__init__(dataset_name)
         self.choices = 'ABCD'
         self.match_option = 0
         self.match_content = 0
         self.answer_extractor = Answer_Extractor(content_only)
-        self.pred_num = [0,0,0,0]
-        self.acc_num = [0,0,0,0]
-        self.gt_num = [0,0,0,0]
 
     def eval_sub_data(self, sub_data, answer_map):
         lt = len(sub_data)
@@ -121,14 +118,10 @@ class MMBench(Base_Metric):
             pred_answer, option_match, content_match = self.answer_extractor.fetch_answer(item['answer'], item['gt_choices'])
             PRED.append(pred_answer)
             if pred_answer is not None:
-                self.pred_num[ord(pred_answer)- ord('A')] += 1
-                self.gt_num[ord(GT[-1]) - ord('A')] += 1
                 self.match_content += content_match
                 self.match_option += option_match
                 if GT[-1] != PRED[-1]:
                     result = 0
-                else:
-                    self.acc_num[ord(pred_answer) - ord('A')] += 1
             else:
                 result = 0
         return result
@@ -166,10 +159,9 @@ class MMBench(Base_Metric):
             circular_acc = circular_score / vanilla_cnt * 100,
             option_match = self.match_option / cnt * 100,
             content_match = self.match_content /cnt *100,
-            prednum = self.pred_num,
         )
     
-class MME(Base_Metric):
+class MMEVQA(Base_Metric):
     def __init__(self, dataset_name):
         super().__init__(dataset_name)
         from .utils import Cleaner

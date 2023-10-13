@@ -4,10 +4,11 @@ from torch.utils.data import Dataset
 import random
 class FlickrDataset(Dataset):
     task_name = 'caption'
-    dataset_name = 'Flickr'
+    dataset_name = 'Flickr30k'
     def __init__(self, 
-                 base_data_path = '/data/fanhongxing/data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/',
-                 ppl_cfg = None):
+                 base_data_path = 'data/datasets/LAMM//2D_Benchmark/',
+                 ppl_cfg = None,
+                 **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,'meta_file', 'Caption_flickr30k.json')

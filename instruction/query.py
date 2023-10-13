@@ -72,11 +72,11 @@ caption_templates = [
 
 # vqa
 vqa_prompts = [
+    'The answer is',
+    'What is the correct option for this question?',
     '',
     'What is the answer?',
     'The answer for the question is',
-    'What is the correct option for this question?',
-    'The answer is',
     'ANSWER:',
     'The answer (option) is',
     'Answer:',
@@ -84,8 +84,8 @@ vqa_prompts = [
 
 # vqa answer templates for ppl inference
 vqa_templates = [
-    'The correct option for the question is {}',
     'The answer is {}',
+    'The correct option for the question is {}',
     '{}',
 ]
 

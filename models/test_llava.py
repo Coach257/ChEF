@@ -288,7 +288,8 @@ class TestLLaVA(TestBase):
             template_token = self.tokenizer.encode(template, add_special_tokens=False)
             template_token_list.append(template_token)
             option_token = self.tokenizer.encode(option, add_special_tokens=False)
-            option_token = self.tokenizer.encode(' ' + option, add_special_tokens = False) # llava tokenizer encodes " cat" different from "cat"
+            if template_token != option_token:
+                option_token = self.tokenizer.encode(' ' + option, add_special_tokens = False) # llava tokenizer encodes " cat" different from "cat"
             token_len = len(option_token)
             for index in range(len(template_token)):
                 if template_token[index: index + token_len] == option_token:
@@ -296,6 +297,7 @@ class TestLLaVA(TestBase):
                     answer_end_indices.append(index + token_len)
                     answer_token_list.append(option_token)
                     break
+
             assert len(answer_start_indices) == len(template_token_list), "tokenizer encode answer in template different from answer only"
 
         images, input_ids, batch_size = self.get_images_input_ids(images, prompts, dtype=torch.float16)
