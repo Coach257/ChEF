@@ -66,6 +66,7 @@ class MMBenchDataset(Dataset):
         self.img_crp=img_crp
         self.img_c_path = '/mnt/petrelfs/shizhelun/wangzp/data/dataset/mmbench/0/images'
         self.txt_c = json.load(open('/mnt/petrelfs/shizhelun/wangzp/data/dataset/mmbench/0/MMBench.json', 'rb'))
+        self.data = None
 
     def __len__(self):
         return len(self.df)
