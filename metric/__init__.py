@@ -1,8 +1,7 @@
 from .classification import FG_Classification, CG_Classification
-from .desiderata import MMBench_Calibration, ScienceQA_Calibration
 from .vqa import VQA, MMBenchVQA
 from .caption import Caption
-# from .vqa import  LAMM_VQA, MMBench, LAMM_VQA_Calibration, MMBench_Calibration, LAMM_VQA_INF,LAMM_VQA_CON,MME
+from .desiderata import MMBench_Calibration, ScienceQA_Calibration, POPE_Metric, Instruct_Follow
 from .detection import Detection, KOSMOS_Detection 
 from .counting import Counting
 # from .pope import POPE_Metric
@@ -22,21 +21,22 @@ evaluation_protocol = {
     # },
     'Calibration':
     {
-        'ScienceQA': ScienceQA_Calibration,
+        'VQA': ScienceQA_Calibration,
         'MMBench': MMBench_Calibration
     },
     # 'MMBench_Calibration':
     # {
     #     'VQA': MMBench_Calibration,
     # },
-    # 'Hallucination':
-    # {
-    #     'POPE': POPE_Metric,
-    # },
-    # 'Instruct_Follow':
-    # {
-    #     'VQA': LAMM_VQA_INF,
-    # },
+    'Hallucination':
+    {
+        'POPE': POPE_Metric,
+    },
+    'Instruct_Follow':
+    {
+      'VQA': Instruct_Follow,
+      'MMBench': Instruct_Follow,
+    },
     # 'Consistency':
     # {
     #     'VQA': LAMM_VQA_CON

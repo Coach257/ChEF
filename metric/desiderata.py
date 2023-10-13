@@ -1,74 +1,71 @@
 from .vqa import Answer_Extractor
 from .utils import Base_Metric
-class Answer_Extractor_map(Answer_Extractor): # TODO 
-    def __init__(self, choices='ABCDEFG') -> None:
-        self.choices = choices
-    # Prefetch Answers
-    def infer_option(self, answer,item_choices):
-        def get_unit_option(splits, choices='ABCD', prefix='', suffix=''):
-            res = None
-            for c in choices:
-                if prefix + c + suffix in splits:
-                    if res is None:
-                        res = c
-                    else:
-                        return None
-            return res
-        splits = [x.strip() for x in answer.split()]
+import json
 
-        # no prefix match
-        no_prefix_option = get_unit_option(splits, item_choices)
-        if no_prefix_option is not None and no_prefix_option != 'A':
-            return no_prefix_option
-
-        # prefix match
-        tups = [('(', ')'), ('(', ').'), ('', '.'), ('', ','), ('', ':'), ('', ')'), ('', ').'), 
-                (':', ''), (':', ','), (':', '.'), (':', ')'), (':', ').')]
-        for tup in tups:
-            prefix_option = get_unit_option(splits, item_choices, prefix=tup[0], suffix=tup[1])
-            if prefix_option is not None:
-                return prefix_option
-        return None
-
-    def infer_text(self, answer, choices,item_choices):
-        answer = answer.lower()
-        assert isinstance(choices, list)
-        gt_choices = {}
-        for idx, k in enumerate(choices):
-            gt_choices[item_choices[idx]] = str(k).lower()
-        cands = []
-        for key, value in gt_choices.items():
-            if value in answer:
-                cands.append(key)
-        if len(cands) == 1:
-            return cands[0]
-        return None
-
-    def preprocess_text(self, answer):
-        output_text = answer
-        output_text = output_text.split('###')[0]
-        output_text = output_text.split('Assistant:')[-1].strip()
-        output_text = output_text.strip('</s><s>')
-        output_text = output_text.strip('</Img>')
-        output_text = output_text.strip()
-        # mmbench direct pattern
-        pattern = re.compile(r'([A-Z]\.)')
-        res = pattern.findall(output_text)
-        if len(res) > 0:
-            return '(' + res[0][:-1] + ')'
-        # ppl pattern
-        pattern = re.compile(r'\([A-Z]')
-        res = pattern.findall(output_text)
-        if len(res) > 0:
-            return res[0] + ')'
-        return answer
-
-    def fetch_answer(self, answer, choices, item_choices):
-        answer = self.preprocess_text(answer)
-        copt = self.infer_option(answer,item_choices)
-        #return copt if copt else self.infer_text(answer, choices,item_choices)
-        return copt
     
+class ScienceQA_Calibration(Base_Metric):
+    CHOICE = 'ABCDEFG'
+    def __init__(self, dataset_name, content_only = False, **kwargs):
+        super().__init__(dataset_name)
+        self.answer_extractor = Answer_Extractor(content_only)
+        self.match = 0
+
+    def metric_func(self, answers):
+        score = 0.0
+        for item in tqdm(answers, desc="Running Metric"):
+            gt_choice = item['gt_choice']
+            gt_char = self.CHOICE[gt_choice]
+            pred_text = item['answer']
+            pred_option, _, _ = self.answer_extractor.fetch_answer(pred_text, item['gt_choices'])
+            item['correct']=0
+            if pred_option:
+                self.match +=1
+            if pred_option == gt_char:
+                score += 1.0
+                item['correct']=1
+        score = score/len(answers) * 100
+
+        # Calculate ECE
+
+        num_bins=10
+        probs, accs = [], []
+        least = int(len(answers) / num_bins) # Minimum number of samples for each bin
+        plus_max_id = len(answers) % num_bins -1 # [0...plud_max_id]-th bin have least+1 samples
+        cur_bin_id=0 # current bin id
+        cur_bin_max = least+1 if plus_max_id>=0 else least # current bin maxsize
+        ece = 0.0
+        cur_bin_probs, cur_bin_accs = [], []
+        sorted_answers = sorted(answers, key=lambda x: x['prob']) 
+        total = 0
+        #import ipdb;ipdb.set_trace()
+        for item in tqdm(sorted_answers, desc="Running Calibration Metric"):
+            cur_bin_probs.append(item['prob'])
+            cur_bin_acc.append(item['correct'])
+            if len(cur_bin_probs) == cur_bin_max:
+                avg_p = sum(cur_bin_probs)*1.0 / len(cur_bin)
+                probs.append(avg_p)
+                avg_a = sum(cur_bin_acc)*1.0 / len(cur_bin_acc)
+                accs.append(avg_a)
+                ece += len(cur_bin_probs)*abs(avg_p-avg_a)
+                total += len(cur_bin_acc)
+                cur_bin_id+=1
+                cur_bin = []
+                cur_bin_acc = []
+                if cur_bin_id==plus_max_id+1:
+                    cur_bin_max-=1
+        #import ipdb;ipdb.set_trace()
+        assert total == len(answers)
+        ece = ece / len(answers) 
+        return {'acc':score, 'ece': ece,'acc_bins':accs, 'probs':probs}
+        return dict(
+            ACC = score, 
+            match_ratio = self.match /(len(answers)) * 100,
+            ECE = ece,
+            Acc_bins = accs,
+            Prob_bins = probs
+        )
+
+
 class MMBench_Calibration(Base_Metric):
     def __init__(self, dataset_name, content_only = False):
         super().__init__(dataset_name)
@@ -76,6 +73,9 @@ class MMBench_Calibration(Base_Metric):
         self.match_option = 0
         self.match_content = 0
         self.answer_extractor = Answer_Extractor(content_only)
+        self.pred_num = [0,0,0,0]
+        self.acc_num = [0,0,0,0]
+        self.gt_num = [0,0,0,0]
 
     def eval_sub_data(self, sub_data, answer_map):
         lt = len(sub_data)
@@ -88,10 +88,14 @@ class MMBench_Calibration(Base_Metric):
             pred_answer, option_match, content_match = self.answer_extractor.fetch_answer(item['answer'], item['gt_choices'])
             PRED.append(pred_answer)
             if pred_answer is not None:
+                self.pred_num[ord(pred_answer)- ord('A')] += 1
+                self.gt_num[ord(GT[-1]) - ord('A')] += 1
                 self.match_content += content_match
                 self.match_option += option_match
                 if GT[-1] != PRED[-1]:
                     result = 0
+                else:
+                    self.acc_num[ord(pred_answer) - ord('A')] += 1
             else:
                 result = 0
         return result
@@ -128,29 +132,29 @@ class MMBench_Calibration(Base_Metric):
             circular_score += out
             result[main_idx] = out
             answers_unique.append(answers[i])
-        #import ipdb;ipdb.set_trace()
+        
+        # Calculate ECE
+
         num_bins=10
-        probs = []
-        accs = []
-        least = int(len(answers_unique) / num_bins)
-        plus_max_id = len(answers_unique) % num_bins -1
-        cur_bin_id=0
-        cur_bin_max = least+1 if plus_max_id >=0 else least
-        cali=0.0
-        cur_bin = []
-        cur_bin_acc = [] 
-        sorted_answers = sorted(answers_unique, key=lambda x: x['prob'])
+        probs, accs = [], []
+        least = int(len(answers) / num_bins) # Minimum number of samples for each bin
+        plus_max_id = len(answers) % num_bins -1 # [0...plud_max_id]-th bin have least+1 samples
+        cur_bin_id=0 # current bin id
+        cur_bin_max = least+1 if plus_max_id>=0 else least # current bin maxsize
+        ece = 0.0
+        cur_bin_probs, cur_bin_accs = [], []
+        sorted_answers = sorted(answers, key=lambda x: x['prob']) 
         total = 0
         #import ipdb;ipdb.set_trace()
         for item in tqdm(sorted_answers, desc="Running Calibration Metric"):
-            cur_bin.append(item['prob'])
+            cur_bin_probs.append(item['prob'])
             cur_bin_acc.append(item['correct'])
-            if len(cur_bin) == cur_bin_max:
-                avg_p = sum(cur_bin)*1.0 / len(cur_bin)
+            if len(cur_bin_probs) == cur_bin_max:
+                avg_p = sum(cur_bin_probs)*1.0 / len(cur_bin)
                 probs.append(avg_p)
                 avg_a = sum(cur_bin_acc)*1.0 / len(cur_bin_acc)
                 accs.append(avg_a)
-                cali+= len(cur_bin)*abs(avg_p-avg_a)
+                ece += len(cur_bin_probs)*abs(avg_p-avg_a)
                 total += len(cur_bin_acc)
                 cur_bin_id+=1
                 cur_bin = []
@@ -159,141 +163,24 @@ class MMBench_Calibration(Base_Metric):
                     cur_bin_max-=1
         #import ipdb;ipdb.set_trace()
         assert total == len(answers_unique)
-        cali = cali / len(answers_unique) 
+        ece = ece / len(answers_unique) 
         return dict(
             vanilla_acc = vanilla_score / vanilla_cnt * 100,
             circular_acc = circular_score / vanilla_cnt * 100,
             option_match = self.match_option / cnt * 100,
-            content_match = self.match_content /cnt *100,
-            ece=cali,
-            acc_bins=accs,
-            probs=probs
+            content_match = self.match_content / cnt *100,
+            prednum = self.pred_num,
+            ECE=ece,
+            Acc_bins=accs,
+            Prob_bins=probs,
         )
 
 
-class ScienceQA_Calibration(Base_Metric):
-    CHOICE = ['A', 'B', 'C', 'D', 'E', 'F', 'G','H', 'I', 'J']
+
+
+class POPE_Metric(Base_Metric):
     def __init__(self, dataset_name, **kwargs):
         super().__init__(dataset_name)
-    def check_text(self, text, choices, gt_id):
-        text = text.lower()
-        if choices[gt_id].lower() not in text:
-            return False
-        for id, choice in enumerate(choices):
-            if id == gt_id:
-                continue
-            if choice.lower() in text:
-                return False
-        return True
-    def check_option(self, res_list, gt_char):
-        for res in res_list:
-            if gt_char not in res:
-                return False
-        return True
-    def check_pattern2(self, res_list, gt_char):
-        pred = res_list[0][-1]
-        if pred == gt_char:
-            return True
-        return False
-    def metric_func(self, answers):
-        import re
-        pattern_1 = re.compile(r'The answer is \(?[A-E]\W|the answer is \(?[A-E]\W')
-        pattern_2 = re.compile(r'ANSWER: [A-E]')
-        pattern_3 = re.compile(r'\([A-E]')
-        
-        score = 0.0
-        for item in tqdm(answers, desc="Running Metric"):
-            tmp_score = 0
-            gt_choice = item['gt_choice']
-            gt_char = self.CHOICE[gt_choice]
-            pred_text = item['answer']
-            pred_text = pred_text
-            res_1 = pattern_1.findall(pred_text)
-            res_2 = pattern_2.findall(pred_text)
-            res_3 = pattern_3.findall(pred_text)
-            if len(res_1) !=0 :
-                if self.check_option(res_1, gt_char):
-                    tmp_score = 1.0
-            elif len(res_2) !=0:
-                if self.check_pattern2(res_2, gt_char):
-                    tmp_score = 1.0
-            elif len(res_3) != 0:
-                if self.check_option(res_3, gt_char):
-                    tmp_score = 1.0
-            elif self.check_text(pred_text, item['gt_choices'], gt_choice):
-                tmp_score = 1.0
-            score+=tmp_score
-            
-            item['correct']=1 if tmp_score>0 else 0
-        
-        score = score/len(answers) * 100
-        num_bins=10
-        probs = []
-        accs = []
-        least = int(len(answers) / num_bins)
-        plus_max_id = len(answers) % num_bins -1
-        cur_bin_id=0
-        cur_bin_max = least+1 if plus_max_id >=0 else least
-        cali=0.0
-        cur_bin = []
-        cur_bin_acc = [] 
-        sorted_answers = sorted(answers, key=lambda x: x['prob'])
-        total = 0
-        #import ipdb;ipdb.set_trace()
-        for item in tqdm(sorted_answers, desc="Running Calibration Metric"):
-            cur_bin.append(item['prob'])
-            cur_bin_acc.append(item['correct'])
-            if len(cur_bin) == cur_bin_max:
-                avg_p = sum(cur_bin)*1.0 / len(cur_bin)
-                probs.append(avg_p)
-                avg_a = sum(cur_bin_acc)*1.0 / len(cur_bin_acc)
-                accs.append(avg_a)
-                cali+= len(cur_bin)*abs(avg_p-avg_a)
-                total += len(cur_bin_acc)
-                cur_bin_id+=1
-                cur_bin = []
-                cur_bin_acc = []
-                if cur_bin_id==plus_max_id+1:
-                    cur_bin_max-=1
-        #import ipdb;ipdb.set_trace()
-        assert total == len(answers)
-        cali = cali / len(answers) 
-        return {'acc':score, 'ece': cali,'acc_bins':accs, 'probs':probs}
-
-
-
-
-class LAMM_VQA_INF(Base_Metric):
-    CHOICE = 'ABCDEFG'
-    def __init__(self, dataset_name, **kwargs):
-        super().__init__(dataset_name)
-        self.answer_extractor = Answer_Extractor_map()
-
-    def metric_func(self, answers):
-        score = 0.0
-        result = {}
-        vanilla_cnt = 0
-        for item in tqdm(answers, desc="Running Metric"):
-            idx = item['id']
-            main_idx = str(int(idx) % int(1e6))
-            if main_idx in result:
-                continue
-            vanilla_cnt += 1
-            gt_choice = item['gt_choice']
-            gt_char = item['options'][gt_choice]
-            pred_text = item['answer']
-            pred_option = self.answer_extractor.fetch_answer(pred_text, item['gt_choices'],item['options'])
-            #import ipdb;ipdb.set_trace()
-            if pred_option!=None and pred_option.lower() == gt_char.lower():
-                score += 1.0
-            result[main_idx]=1
-        score = score/vanilla_cnt * 100
-        return score
-
-
-class POPE_Metric:
-    def __init__(self, dataset_name):
-        self.dataset_name = dataset_name
     
     def metric_func(self, answers):
         label_list=[]
@@ -362,3 +249,88 @@ class POPE_Metric:
         for key, value in results.items():
             print(f'{key}: {value}')
         return results
+
+
+class Answer_Extractor_map(Answer_Extractor): # TODO 
+    def __init__(self, content_only = False) -> None:
+        super.__init__(content_only)
+    # Prefetch Answers
+    def infer_option(self, answer, item_choices):
+        def get_unit_option(splits, choices='ABCD', prefix='', suffix=''):
+            res = None
+            for c in choices:
+                if prefix + c + suffix in splits:
+                    if res is None:
+                        res = c
+                    else:
+                        return None
+            return res
+        splits = [x.strip() for x in answer.split()]
+
+        # no prefix match
+        no_prefix_option = get_unit_option(splits, item_choices)
+        if no_prefix_option is not None and no_prefix_option != 'A':
+            return no_prefix_option
+
+        # prefix match
+        tups = [('(', ')'), ('(', ').'), ('', '.'), ('', ','), ('', ':'), ('', ')'), ('', ').'), 
+                (':', ''), (':', ','), (':', '.'), (':', ')'), (':', ').')]
+        for tup in tups:
+            prefix_option = get_unit_option(splits, item_choices, prefix=tup[0], suffix=tup[1])
+            if prefix_option is not None:
+                return prefix_option
+        return None
+
+
+    def preprocess_text(self, answer):
+        output_text = answer
+        output_text = output_text.split('###')[0]
+        output_text = output_text.split('Assistant:')[-1].strip()
+        output_text = output_text.strip('</s><s>')
+        output_text = output_text.strip('</Img>')
+        output_text = output_text.strip()
+        # mmbench direct pattern
+        pattern = re.compile(r'([A-Z]\.)')
+        res = pattern.findall(output_text)
+        if len(res) > 0:
+            return '(' + res[0][:-1] + ')'
+        # ppl pattern
+        pattern = re.compile(r'\([A-Z]')
+        res = pattern.findall(output_text)
+        if len(res) > 0:
+            return res[0] + ')'
+        return answer
+
+    def fetch_answer(self, answer, choices):
+        answer = self.preprocess_text(answer)
+        copt = self.infer_option(answer, choices)
+        return copt
+
+class Instruct_Follow(Base_Metric):
+    def __init__(self, dataset_name, **kwargs):
+        super().__init__(dataset_name)
+        self.answer_extractor = Answer_Extractor_map()
+
+    def metric_func(self, answers):
+        score = 0.0
+        result = {}
+        vanilla_cnt = 0
+        for item in tqdm(answers, desc="Running Metric"):
+            idx = item['id']
+            main_idx = str(int(idx) % int(1e6))
+            if main_idx in result:
+                continue
+            vanilla_cnt += 1
+            gt_choice = item['gt_choice']
+            gt_char = item['options'][gt_choice]
+            pred_text = item['answer']
+            pred_option = self.answer_extractor.fetch_answer(pred_text, item['gt_choices'],item['options'])
+            #import ipdb;ipdb.set_trace()
+            if pred_option!=None and pred_option.lower() == gt_char.lower():
+                score += 1.0
+            result[main_idx]=1
+        score = score/vanilla_cnt * 100
+        return score
+
+
+
