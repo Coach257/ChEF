@@ -22,7 +22,8 @@ class MMEDataset(Dataset):
     def __init__(self,
                  base_data_path,
                  ppl_cfg = True,
-                 option_lower = False
+                 option_lower = False,
+                 **kwargs
         ):
         self.base_data_path = base_data_path
         self.load_raw_data()

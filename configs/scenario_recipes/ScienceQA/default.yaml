@@ -6,14 +6,11 @@ scenario_cfg:
 
 eval_cfg:
   instruction_cfg: 
-    query_type: query_pool
-    prompt_assigned_ids: 4    # 3: [instructblip, llamaadapter], 4: [kosmos2, lamm, llava, minigpt4]
-    template_assigned_ids: 1  # 0: [instructblip, llamaadapter], 1: [kosmos2, lamm, llava, minigpt4]
+    query_type: standard_query
   inferencer_cfg:
-    inferencer_type: ppl
+    inferencer_type: PPL
     batch_size: 8
     CoT: True
     max_new_tokens: 256
-    CoT_split: True
   metric_cfg:
-    protocol: LAMM
+    metric_type: basic

@@ -1,5 +1,5 @@
 from .vqa import Answer_Extractor
-
+from .utils import Base_Metric
 class Answer_Extractor_map(Answer_Extractor): # TODO 
     def __init__(self, choices='ABCDEFG') -> None:
         self.choices = choices
@@ -171,7 +171,7 @@ class MMBench_Calibration(Base_Metric):
         )
 
 
-class LAMM_VQA_Calibration(Base_Metric):
+class ScienceQA_Calibration(Base_Metric):
     CHOICE = ['A', 'B', 'C', 'D', 'E', 'F', 'G','H', 'I', 'J']
     def __init__(self, dataset_name, **kwargs):
         super().__init__(dataset_name)

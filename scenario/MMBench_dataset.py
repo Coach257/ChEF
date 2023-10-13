@@ -41,8 +41,8 @@ class MMBenchDataset(Dataset):
                  ppl_cfg = None,
                  option_map=None,
                  text_crp=False,
-                 img_crp=False
-
+                 img_crp=False,
+                 **kwargs
         ):
         self.df = pd.read_csv(os.path.join(base_data_path, f'mmbench_{split}_20230712.tsv'), sep='\t')
         self.ppl_cfg = ppl_cfg

@@ -40,9 +40,9 @@ class ScienceQADataset(Dataset):
     task_name = 'VQA'
     dataset_name = 'ScienceQA'
 
-    def __init__(self, base_data_path, ppl = False, option_content = True, option_map=None, img_crp=False, text_crp=False,split='31'):
+    def __init__(self, base_data_path, ppl = False, option_content = True, option_map=None, img_crp=False, text_crp=False,split='31', **kwargs):
         self.base_data_path = base_data_path
-        json_path = os.path.join(self.base_data_path, 'meta_file', f'{self.task_name}_{self.datasat_name}.json')
+        json_path = os.path.join(self.base_data_path, 'meta_file', f'{self.task_name}_{self.dataset_name}.json')
         if text_crp:
             json_path='/mnt/petrelfs/shizhelun/wangzp/data/dataset/sqa_c/VQA_ScienceQA_C.json'
         self.data = json.load(open(json_path, 'rb'))

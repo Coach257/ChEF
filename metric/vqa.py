@@ -96,7 +96,7 @@ class VQA(Base_Metric):
         score = score/len(answers) * 100
         return dict(
             ACC = score, 
-            match_per = self.match /(len(answers)) * 100
+            match_ratio = self.match /(len(answers)) * 100
         )
 
 class MMBench(Base_Metric):
@@ -172,7 +172,7 @@ class MMBench(Base_Metric):
 class MME(Base_Metric):
     def __init__(self, dataset_name):
         super().__init__(dataset_name)
-        from .tools import Cleaner
+        from .utils import Cleaner
         self.cleaner = Cleaner()
         self.cnt_dict = {
             "existence": 0, 

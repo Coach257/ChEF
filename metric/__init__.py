@@ -1,5 +1,6 @@
 from .classification import FG_Classification, CG_Classification
-from .desiderata import MMBench_Calibration
+from .desiderata import MMBench_Calibration, ScienceQA_Calibration
+from .vqa import VQA
 # from .caption import  LAMM_Caption
 # from .vqa import  LAMM_VQA, MMBench, LAMM_VQA_Calibration, MMBench_Calibration, LAMM_VQA_INF,LAMM_VQA_CON,MME
 from .detection import Detection, KOSMOS_Detection 
@@ -11,7 +12,7 @@ evaluation_protocol = {
         'coarse_grained_classification': CG_Classification,
         'fine_grained_classification': FG_Classification,
         # 'caption' : LAMM_Caption,
-        # 'VQA': LAMM_VQA,
+        'VQA': VQA,
         'detection': Detection,
         
         # 'counting': LAMM_Counting,
@@ -21,7 +22,8 @@ evaluation_protocol = {
     # },
     'Calibration':
     {
-        'VQA': Calibration,
+        'ScienceQA': ScienceQA_Calibration,
+        'MMBench': MMBench_Calibration
     },
     # 'MMBench_Calibration':
     # {

@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 class FSC147Dataset(Dataset):
     task_name = 'counting'
     dataset_name = 'FSC147'
-    def __init__(self, base_data_path = '/data/fanhongxing/data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/', ppl_cfg = None):
+    def __init__(self, base_data_path = '/data/fanhongxing/data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/', ppl_cfg = None, **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,'meta_file', 'Counting_FSC147.json')
