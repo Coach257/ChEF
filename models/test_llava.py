@@ -372,7 +372,7 @@ class TestLLaVA(TestBase):
 
 
     @torch.no_grad()
-    def icl_ppl_inference(self, image_list, question_list, answer_list, answer_options, ices, incontext_cfg, CoT_list = None):
+    def icl_ppl_inference(self, image_list, question_list, answer_list, answer_pool, ices, incontext_cfg, CoT_list = None):
         images, prompts = [], []
         for idx, (image, question, ice, answer) in enumerate(zip(image_list, question_list, ices, answer_list)):
             image = get_image(image)
@@ -387,5 +387,5 @@ class TestLLaVA(TestBase):
             prompt += '\n' + answer
             prompts.append(prompt)
             images.append(image)
-        results = self.do_ppl(images, prompts, answer_list, answer_options)
+        results = self.do_ppl(images, prompts, answer_list, answer_pool)
         return results, prompts
