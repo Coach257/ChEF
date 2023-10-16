@@ -11,6 +11,7 @@ import datetime
 
 from torch.utils.data import Subset
 import json
+from utils import rand_acc
 
 
 class CustomSubset(Subset):
@@ -98,8 +99,8 @@ def main():
     # calculate RIAM
     assert len(results) >1
     acc_icl_average = sum(results[1:])/len(results[1:])
-    acc_rand = 28.31 # MMBench
-    # acc_rand = 35.8 # Sciencqa
+    acc_rand = rand_acc[dataset_name]['vanilla']
+
     RIAM = (acc_icl_average - results[0]) / (results[0] - acc_rand)
     with open(os.path.join(save_base_dir, 'results.json'), 'w', encoding='utf-8') as f:
         all_results = []
