@@ -1,0 +1,28 @@
+scenario_cfg:
+  dataset_name: MMBench
+  base_data_path: data/datasets/MMBench
+  ppl_cfg: 
+    content_only: False
+  split: dev
+  hint: True
+
+eval_cfg:
+  instruction_cfg: 
+    query_type: query_pool
+    prompt_assigned_ids: 1
+    template_assigned_ids: 1
+    incontext_cfg:
+      retriever_type: random
+      ice_num: 3
+      use_pic: False
+      add_sysmsg: True
+      sysmsg: 'You will now see some examples. The example has no relation to the provided image content. You need to follow the example and answer the final question based on the image content.'
+      mult_conversations: False
+      random_seed: 1
+  inferencer_cfg:
+    inferencer_type: ICL_PPL
+    batch_size: 4
+    CoT: True
+    max_new_tokens: 256
+  metric_cfg:
+    metric_type: basic
