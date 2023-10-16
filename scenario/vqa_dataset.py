@@ -52,14 +52,16 @@ class ScienceQADataset(Dataset):
         if option_map!=None:
             self.map_type = option_map['type']
             self.map_id = option_map['ids']
+            '''
             data_tmp = []
             sub_idx = json.load(open(option_map['sub_idx'], 'rb'))
             for i in sub_idx:
                 data_tmp.append(self.data[i])
             perc = option_map['perc']
-            N =  len(data_tmp)
+            N = len(data_tmp)
             self.data=data_tmp[:int(N*perc)]
-            if self.map_type!='unneutral':
+            '''
+            if self.map_type!='unnatural':
                 self.option_map=OPTION_MAP[self.map_type][option_map['ids']]
         self.data_c_path = f'/mnt/petrelfs/shizhelun/wangzp/data/dataset/sqa_c/{split}'
         if img_crp:
@@ -107,7 +109,7 @@ class ScienceQADataset(Dataset):
         if self.map_type!=None:
             map_text = ''
             map_template='If the answer is "{}", you need to output "{}". '
-            if self.map_type=='unneutral':
+            if self.map_type=='unnatural':
                 if self.map_id==0:
                     option_map = res_dict['options'][1:]+res_dict['options'][:1]
                 else:
@@ -152,7 +154,7 @@ class ScienceQADataset_C(Dataset):
             perc = option_map['perc']
             N =  len(data_tmp)
             self.data=data_tmp[:int(N*perc)]
-            if self.map_type!='unneutral':
+            if self.map_type!='unnatural':
                 self.option_map=OPTION_MAP[self.map_type][option_map['ids']]
         self.data_c_path = '/ssd/home/wangzhipin/data/sqa_c/imgs'
     def __len__(self):
@@ -182,7 +184,7 @@ class ScienceQADataset_C(Dataset):
         if self.map_type!=None:
             map_text = ''
             map_template='If the answer is "{}", you need to output "{}". '
-            if self.map_type=='unneutral':
+            if self.map_type=='unnatural':
                 if self.map_id==0:
                     option_map = data['options'][1:]+data['options'][:1]
                 else:
