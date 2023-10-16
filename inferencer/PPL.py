@@ -133,3 +133,39 @@ class Det_PPL_inferencer(Direct_inferencer):
                 predictions.append(answer_dict)
 
         self._after_inference_step(predictions)
+
+    
+class Cali_inferencer(Direct_inferencer):
+    def __init__(self,  **kwargs) -> None:
+        super().__init__(**kwargs)
+
+    def inference(self, model, dataset):
+        predictions=[]
+        dataloader = DataLoader(dataset, batch_size=self.batch_size, collate_fn=lambda batch: {key: [dict[key] for dict in batch] for key in batch[0]})
+        for batch in tqdm(dataloader, desc="Running inference"):
+            cur_batch_len = len(batch['image_path'])
+            if self.CoT:
+                prompts, cot = self.instruction_handler.generate_CoT_query(model, batch)
+            else:
+                prompts = self.instruction_handler.generate_basic_query(batch)
+                cot=None
+            
+            batch_options = batch['options']
+            image_path, questions, answers, ppl_batch_mask, answer_options, CoT_answer, _ = self.instruction_handler.generate_ppl_query(prompts, batch, batch_options, CoT = cot)
+            score = model.do_calibration(image_path, questions, answers, answer_options, CoT_answer)
+            score_np = np.array(score)
+            for idx in range(cur_batch_len):
+                score_results = score_np[ppl_batch_mask[idx]]
+                score_tensor = torch.from_numpy(score_results)
+                pred_answer_id = score_results.argmax()
+                answer_dict = copy_batch_dict(batch, idx)
+                answer_dict['question'] = prompts[idx]
+                answer_dict['ppl_results'] = score_results.tolist()
+                if self.CoT:
+                    answer_dict['CoT_answer'] = cot[idx]
+                answer_dict['answer'] = batch['options'][idx][pred_answer_id]
+                probs = score_tensor.softmax(dim=-1).tolist()
+                answer_dict['probs'] = probs
+                answer_dict['prob'] = max(probs)
+                predictions.append(answer_dict)
+        self._after_inference_step(predictions)

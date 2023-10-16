@@ -142,7 +142,7 @@ class MMBench_Calibration(Base_Metric):
         cur_bin_id=0 # current bin id
         cur_bin_max = least+1 if plus_max_id>=0 else least # current bin maxsize
         ece = 0.0
-        cur_bin_probs, cur_bin_accs = [], []
+        cur_bin_probs, cur_bin_acc = [], [] # DEBUG
         sorted_answers = sorted(answers, key=lambda x: x['prob']) 
         total = 0
         #import ipdb;ipdb.set_trace()

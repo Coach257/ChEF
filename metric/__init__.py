@@ -4,7 +4,6 @@ from .caption import Caption
 from .desiderata import MMBench_Calibration, ScienceQA_Calibration, POPE_Metric, Instruct_Follow
 from .detection import Detection, KOSMOS_Detection 
 from .counting import Counting
-# from .pope import POPE_Metric
 
 evaluation_protocol = {
     'basic':{
