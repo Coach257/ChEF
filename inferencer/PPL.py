@@ -67,7 +67,7 @@ class ICL_PPL_inferencer(Direct_inferencer):
             ices = self.instruction_handler.generate_ices(prompts, batch_idx, self.batch_size)
             
             batch_options = batch['options']
-            image_path, questions, answers, ppl_batch_mask, answer_options, CoT_answer, ices = self.instruction_handler.generate_ppl_query(prompts, batch, batch_options, ices, CoT = cot)
+            image_path, questions, answers, ppl_batch_mask, answer_options, CoT_answer, ices = self.instruction_handler.generate_ppl_query(prompts, batch, batch_options, ices = ices, CoT = cot)
             outputs, icl_prompts = model.icl_ppl_inference(image_path, questions, answers, answer_options, ices, self.instruction_handler.icl_cfg, CoT_answer)
             ppl_np = np.array(outputs)
             icl_prompt_idx = 0
