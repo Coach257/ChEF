@@ -1,8 +1,8 @@
 from .vqa import Answer_Extractor
 from .utils import Base_Metric
 import json
-
-    
+from tqdm import tqdm 
+import re
 class ScienceQA_Calibration(Base_Metric):
     CHOICE = 'ABCDEFG'
     def __init__(self, dataset_name, content_only = False, **kwargs):
@@ -253,7 +253,7 @@ class POPE_Metric(Base_Metric):
 
 class Answer_Extractor_map(Answer_Extractor): # TODO 
     def __init__(self, content_only = False) -> None:
-        super.__init__(content_only)
+        super().__init__(content_only)
     # Prefetch Answers
     def infer_option(self, answer, item_choices):
         def get_unit_option(splits, choices='ABCD', prefix='', suffix=''):
@@ -324,7 +324,7 @@ class Instruct_Follow(Base_Metric):
             gt_choice = item['gt_choice']
             gt_char = item['options'][gt_choice]
             pred_text = item['answer']
-            pred_option = self.answer_extractor.fetch_answer(pred_text, item['gt_choices'],item['options'])
+            pred_option = self.answer_extractor.fetch_answer(pred_text, item['options'])
             #import ipdb;ipdb.set_trace()
             if pred_option!=None and pred_option.lower() == gt_char.lower():
                 score += 1.0

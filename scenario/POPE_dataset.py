@@ -5,7 +5,7 @@ import random
 class POPE_COCO_Random_Dataset(Dataset):
     task_name = 'POPE'
     dataset_name = 'POPE_COCO_random'
-    def __init__(self, base_data_path):
+    def __init__(self, base_data_path, **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,f'coco_pope_random.json')
@@ -30,7 +30,7 @@ class POPE_COCO_Random_Dataset(Dataset):
 class POPE_COCO_Popular_Dataset(Dataset):
     task_name = 'POPE'
     dataset_name = 'POPE_COCO_popular'
-    def __init__(self, base_data_path):
+    def __init__(self, base_data_path, **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,f'coco_pope_popular.json')
@@ -55,7 +55,7 @@ class POPE_COCO_Popular_Dataset(Dataset):
 class POPE_COCO_Adversarial_Dataset(Dataset):
     task_name = 'POPE'
     dataset_name = 'POPE_COCO_adversarial'
-    def __init__(self, base_data_path):
+    def __init__(self, base_data_path,  **kwargs):
         self.base_data_path = base_data_path
         super().__init__()
         json_path = os.path.join(base_data_path,f'coco_pope_adversarial.json')

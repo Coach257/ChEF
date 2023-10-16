@@ -64,20 +64,20 @@ def main():
     scenario_cfg = recipe_cfg['scenario_cfg']
     
     settings = [('natural',0), ('natural',1), ('natural',2), ('neutral',0), ('neutral',1) ,('unnatural',0)]
+
     for setting in settings:
         ins_dict={
                 'type':setting[0],
                 'ids' : setting[1]
                 }
-        recipe_cfg['option_map']=ins_dict
+        scenario_cfg['option_map'] = ins_dict
         dataset_name = scenario_cfg['dataset_name']
         dataset = dataset_dict[dataset_name](**scenario_cfg)
         if args.debug:
             dataset = sample_dataset(dataset, sample_len=16, sample_seed=0)
-
         # save_cfg
         time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        save_base_dir = os.path.join(save_dir, model_cfg['model_name'], dataset_name, time)
+        save_base_dir = os.path.join(save_dir, model_cfg['model_name'],'Instruct_follow', dataset_name, time)
         os.makedirs(save_base_dir, exist_ok=True)
         with open(os.path.join(save_base_dir, 'config.yaml'), 'w', encoding='utf-8') as f:
             yaml.dump(data=yaml_dict, stream=f, allow_unicode=True)

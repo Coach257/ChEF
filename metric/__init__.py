@@ -21,7 +21,7 @@ evaluation_protocol = {
     # },
     'Calibration':
     {
-        'VQA': ScienceQA_Calibration,
+        'ScienceQA': ScienceQA_Calibration,
         'MMBench': MMBench_Calibration
     },
     # 'MMBench_Calibration':
@@ -30,11 +30,13 @@ evaluation_protocol = {
     # },
     'Hallucination':
     {
-        'POPE': POPE_Metric,
+        'POPE_COCO_random': POPE_Metric,
+        'POPE_COCO_popular': POPE_Metric,
+        'POPE_COCO_adversarial': POPE_Metric,
     },
     'Instruct_Follow':
     {
-      'VQA': Instruct_Follow,
+      'ScienceQA': Instruct_Follow,
       'MMBench': Instruct_Follow,
     },
     # 'Consistency':
