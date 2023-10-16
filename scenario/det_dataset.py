@@ -74,7 +74,7 @@ class VOC2012Dataset(Dataset):
     task_name = 'detection'
     dataset_name = 'VOC2012'
     def __init__(self, 
-                 base_data_path = '/data/fanhongxing/data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/',
+                 base_data_path = 'data/LAMM/LAMM/LAMM-Dataset/2D_Benchmark/',
                  ppl_cfg = None,
                  option_template = 'default',
                  **kwargs):
@@ -188,14 +188,3 @@ class VOC2012Dataset(Dataset):
             res_dict['grounding_options'] = grounding_options
             
         return res_dict
-    
-if __name__ == '__main__':
-    dataset = VOC2012Dataset(base_data_path='/mnt/petrelfs/shizhelun/shizhelun/data/datasets/LAMM/2D_Benchmark',
-                             ppl_cfg=dict(
-                                 negative_opt_num = 3,
-                                 random_seed = 0
-                             ),
-                             option_template = 'shikra',
-                             )
-    data = dataset[0]
-    import ipdb;ipdb.set_trace()

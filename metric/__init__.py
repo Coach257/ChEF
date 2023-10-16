@@ -32,7 +32,7 @@ evaluation_protocol = {
       'VQA': Instruct_Follow,
       'MMBench': Instruct_Follow,
     },
-    'KOSMOS':{
+    'KOSMOS':{ # kosmos outputs special tokens for bbox
         'VOC2012': KOSMOS_Detection,
     },  
 
