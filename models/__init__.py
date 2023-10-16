@@ -27,7 +27,7 @@ def get_model(cfg):
         from .test_otter import TestOtter
         return TestOtter(**cfg)
     elif model_name == 'Kosmos2':
-        from .test_kosmos2 import TestKOSMOS2
+        from .test_kosmos import TestKOSMOS2
         return TestKOSMOS2(**cfg)
     elif model_name == 'LAMM':
         from .test_lamm import TestLAMM
