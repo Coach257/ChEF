@@ -72,7 +72,7 @@ class Answer_Extractor:
             if copt:
                 return copt, 1, 0
         if answer in choices:
-            return self.choices[choices.index(answer)], 0 , 1
+            return self.choices[choices.index(answer)], 0, 1
         return self.infer_text(answer, choices), 0, 1
 
 class VQA(Base_Metric):
