@@ -1,7 +1,7 @@
 <br/>
 
 <div align="center">
-    <img src="resources/ChEF-logo.png" width="600"/>
+    <img src="resources/ChEF-logo.png" width="600"/> <br/>
      <a href="https://openlamm.github.io/" target="_blank">Paper</a>
 </div>
 
@@ -70,10 +70,5 @@ The project is CC BY NC 4.0 (allowing only non-commercial use) and models traine
 ## Citation
 
 ```bibtex
-@article{yin2023lamm,
-    title={LAMM: Language-Assisted Multi-Modal Instruction-Tuning Dataset, Framework, and Benchmark},
-    author={Yin, Zhenfei and Wang, Jiong and Cao, Jianjian and Shi, Zhelun and Liu, Dingning and Li, Mukai and Sheng, Lu and Bai, Lei and Huang, Xiaoshui and Wang, Zhiyong and others},
-    journal={arXiv preprint arXiv:2306.06687},
-    year={2023}
-}
+TODO
 ```
