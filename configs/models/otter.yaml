@@ -1,2 +1,2 @@
 model_name: Otter
-model_path: data/checkpoints/otter-9b-hf
+model_path: luodian/OTTER-9B-LA-InContext

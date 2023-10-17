@@ -50,8 +50,8 @@ class Answer_Extractor:
         output_text = answer
         output_text = output_text.split('###')[0]
         output_text = output_text.split('Assistant:')[-1].strip()
-        output_text = output_text.strip('</s><s>')
-        output_text = output_text.strip('</Img>')
+        # output_text = output_text.strip('</s><s>')
+        # output_text = output_text.strip('</Img>')
         output_text = output_text.strip()
         # mmbench direct pattern
         pattern = re.compile(r'([A-Z]\.)')

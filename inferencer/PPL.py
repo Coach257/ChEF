@@ -19,7 +19,6 @@ class PPL_inferencer(Direct_inferencer):
             else:
                 prompts = self.instruction_handler.generate_basic_query(batch)
                 cot = None
-            
             batch_options = batch['options']
             image_path, questions, answers, ppl_batch_mask, answer_options, CoT_answer, _ = self.instruction_handler.generate_ppl_query(prompts, batch, batch_options, CoT = cot)
             if self.calib:
@@ -118,7 +117,7 @@ class Det_PPL_inferencer(Direct_inferencer):
 
             for idx in range(cur_batch_len):
                 answer_dict = copy_batch_dict(batch, idx)
-                answer_dict['query'] = cls_questions[ppl_batch_mask[idx].argmax()] + '\n' + grd_questions[ppl_batch_mask[idx].argmax()]
+                answer_dict['query'] = cls_questions[0] + '\n' + grd_questions[0]
                 classification_ppl_results = [ppl_np[ppl_batch_mask[idx]] for ppl_np, ppl_batch_mask in zip(classification_ppl_list, classification_ppl_batch_mask_list)]
                 classification_ppl_results = [result for result in classification_ppl_results if len(result) > 0]
                 pred_answer_id_list = [ppl_result.argmin() for ppl_result in classification_ppl_results]
@@ -159,7 +158,7 @@ class Cali_inferencer(Direct_inferencer):
                 score_tensor = torch.from_numpy(score_results)
                 pred_answer_id = score_results.argmax()
                 answer_dict = copy_batch_dict(batch, idx)
-                answer_dict['question'] = prompts[idx]
+                answer_dict['query'] = prompts[idx]
                 answer_dict['ppl_results'] = score_results.tolist()
                 if self.CoT:
                     answer_dict['CoT_answer'] = cot[idx]
