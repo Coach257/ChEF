@@ -81,9 +81,7 @@ def main():
 
     # evaluate
     if model_cfg['model_name'] in ['MiniGPT-4', 'mPLUG-Owl', 'Otter', 'Kosmos2']:
-        recipe_cfg['eval_cfg']['instruction_cfg']['incontext_cfg']['use_pic'] = True
-        recipe_cfg['eval_cfg']['instruction_cfg']['incontext_cfg']['add_sysmsg'] = False
-        recipe_cfg['eval_cfg']['instruction_cfg']['incontext_cfg']['mult_conversations'] = True
+        recipe_cfg['eval_cfg']['instruction_cfg']['incontext_cfg']['ice_with_image'] = True
     
     ice_nums = [1, 2, 3]
     results = []
