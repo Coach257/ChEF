@@ -130,20 +130,6 @@ CONV_VISION = Conversation(
     sep="###",
 )
 
-# CONV_VISION_ICL = Conversation(
-#     system="Give the following image: <Img>ImageContent</Img>. "
-#            "You will be able to see the image once I provide it to you. Please answer my questions."
-#            "You will now see some examples. The example has no relation to the provided image content. You need to follow the example and answer the final question based on the image content."
-#            ,
-#     roles=("Human", "Assistant"),
-#     messages=[],
-#     offset=2,
-#     sep_style=SeparatorStyle.SINGLE,
-#     sep="###",
-# )
-
-
-
 class Chat:
     def __init__(self, model, vis_processor, device='cuda:0'):
         self.device = device
@@ -277,7 +263,6 @@ class Chat:
 
     def ppl_answer(self, image_list, question_list, chat_list, answer_list, answer_options, CoT_list = None, calib = False):
         embs_list = []
-        #import ipdb;ipdb.set_trace()
         for idx,(image, question, conv, answer) in enumerate(zip(image_list, question_list, chat_list, answer_list)):
             img_list = []
             self.upload_img(image, conv, img_list)
@@ -414,8 +399,10 @@ class Chat:
         answer_start_indices = []
         answer_end_indices = []
         answer_token_list = []
+        template_token_list = []
         for template, option in zip(answer_list, answer_options):
             template_token = self.model.llama_tokenizer(template, return_tensors='pt', add_special_tokens=False).input_ids
+            template_token_list.append(template_token)
             option_token = self.model.llama_tokenizer(option, return_tensors='pt', add_special_tokens=False).input_ids
             target_ids.append(template_token)
             token_len = len(option_token[0])
@@ -425,9 +412,7 @@ class Chat:
                     answer_end_indices.append(index + token_len)
                     answer_token_list.append(option_token[0])
                     break
-            if len(answer_start_indices) != len(target_ids):
-                import ipdb;ipdb.set_trace()
-        assert len(answer_start_indices) == len(answer_list)
+            assert len(answer_start_indices) == len(template_token_list), "tokenizer encode answer in template different from answer only"
 
         target_ids = torch.cat([F.pad(x, (max_emb_token - x.shape[1], 0,0,0), value = -100) for x in target_ids], dim=0).to(self.device)
         embs_list = torch.cat([F.pad(x, (0, 0, max_emb_token - x.shape[1], 0, 0, 0), value=0) for x in embs_list], dim=0) # left padding
@@ -446,12 +431,10 @@ class Chat:
         
         loss_mask = target_ids!=-100
         results = []
-        #import ipdb;ipdb.set_trace()
         if calib:
             for idx, item_logits in enumerate(logits):
                 score = 0.0
                 item_prob = F.softmax(item_logits[loss_mask[idx]][answer_start_indices[idx]: answer_end_indices[idx]], dim=-1)
-                #import ipdb;ipdb.set_trace()
                 for jdx in range(answer_end_indices[idx]-answer_start_indices[idx]):
                     score += torch.log(item_prob[jdx, answer_token_list[idx][jdx]]).item()
                 score = score/len(answer_token_list[idx])

@@ -115,7 +115,7 @@ class TestLAMM(TestBase):
 
 
     @torch.no_grad()
-    def ppl_inference(self, image_list, question_list, answer_list, answer_options, CoT_list = None, calib = False):
+    def ppl_inference(self, image_list, question_list, answer_list, answer_pool, CoT_list = None, calib = False):
         images = []
         images = [get_image(image) for image in image_list]
         conversations = []
@@ -129,11 +129,11 @@ class TestLAMM(TestBase):
             conversation.append({'from':'gpt', 'value': fromgpt})
             conversations.append(conversation)
     
-        results = self.do_ppl(images, conversations, answer_list, answer_options, calib = False)
+        results = self.do_ppl(images, conversations, answer_list, answer_pool, calib = calib)
         return results
 
     @torch.no_grad()
-    def icl_ppl_inference(self, image_list, question_list, answer_list, answer_options, ices, incontext_cfg, CoT_list = None, calib = False):
+    def icl_ppl_inference(self, image_list, question_list, answer_list, answer_pool, ices, incontext_cfg, CoT_list = None, calib = False):
         images = []
         images = [get_image(image) for image in image_list]
         if incontext_cfg['use_pic']:
@@ -161,16 +161,18 @@ class TestLAMM(TestBase):
             conversation.append({'from':'gpt', 'value': fromgpt})
             conversations.append(conversation)
 
-        results = self.do_ppl(images, conversations, answer_list, answer_options, calib = calib, icl_sysmsg=icl_sysmsg)
+        results = self.do_ppl(images, conversations, answer_list, answer_pool, calib = calib, icl_sysmsg=icl_sysmsg)
         return results, conversations
     
     @torch.no_grad()
-    def do_ppl(self, images, conversations, answer_list, answer_options, calib = False, icl_sysmsg=None):
+    def do_ppl(self, images, conversations, answer_list, answer_pool, calib = False, icl_sysmsg=None):
         answer_start_indices = []
         answer_end_indices = []
         answer_token_list = []
-        for template, option in zip(answer_list, answer_options):
+        template_token_list = []
+        for template, option in zip(answer_list, answer_pool):
             template_token = self.model.llama_tokenizer.encode(template, add_special_tokens=False)
+            template_token_list.append(template_token)
             option_token = self.model.llama_tokenizer.encode(option, add_special_tokens=False)
             token_len = len(option_token)
             for index in range(len(template_token)):
@@ -179,8 +181,8 @@ class TestLAMM(TestBase):
                     answer_end_indices.append(index + token_len)
                     answer_token_list.append(option_token)
                     break
-
-        assert len(answer_start_indices) == len(answer_list)
+            assert len(answer_start_indices) == len(template_token_list), "tokenizer encode answer in template different from answer only"
+            
         logits, target_ids = self.model(dict(
             vision_type = 'image',
             task_type = self.task_type,

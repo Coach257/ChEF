@@ -77,14 +77,7 @@ class TestMiniGPT4(TestBase):
         chat_list = [CONV_VISION.copy() for _ in range(len(image_list))]
         batch_outputs, prompts = self.chat.icl_batch_answer(image_list, question_list, chat_list, ice_imgs_emb, sample_data, incontext_cfg, max_new_tokens=max_new_tokens)
         return batch_outputs, prompts
-    '''
-    @torch.no_grad()
-    def cali_inference(self, image_list, question_list, answer_list, batch_id = None, gt_answer=None):
-        image_list = [get_image(image) for image in image_list]
-        chat_list = [CONV_VISION.copy() for _ in range(len(image_list))]
-        prob, pred = self.chat.cali_answer(image_list, question_list, chat_list, answer_list, batch_id=batch_id, gt_answer=gt_answer)
-        return prob, pred 
-    '''
+
     @torch.no_grad()
     def cali_inference(self, image_list, question_list, answer_list, answer_options, CoT_list = None):
         image_list = [get_image(image) for image in image_list]
@@ -105,14 +98,6 @@ class TestMiniGPT4(TestBase):
         elif incontext_cfg['use_pic'] and self.ice_imgs_emb is None:
             ice_images = [ice['image_path'] for ice in ices[0]]
             self.ice_imgs_emb = self.chat.get_imgs_emb(ice_images)
-            # self.ice_imgs_emb = [self.ice_imgs_emb for _ in range(bs)]
-            # ices_images = []
-            # for ice in ices:
-            #     ice_images = []
-            #     for i in range(len(ice)):
-            #         ice_images.append(ice[i]['image_path'])
-            #     ices_images.append(ice_images)
-            # self.ice_imgs_emb = [self.chat.get_imgs_emb(ice_img) for ice_img in ices_images]
         return self.ice_imgs_emb
 
     @torch.no_grad()

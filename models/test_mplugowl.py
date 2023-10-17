@@ -4,8 +4,7 @@ from .mplug_owl.processing_mplug_owl import MplugOwlProcessor, MplugOwlImageProc
 from .mplug_owl.modeling_mplug_owl import MplugOwlForConditionalGeneration
 from transformers import AutoTokenizer
 from transformers.models.llama.tokenization_llama import LlamaTokenizer
-from .utils import get_image
-from evaluation.conversation import Conversation, SeparatorStyle
+from .utils import get_image, Conversation, SeparatorStyle
 import torch.nn.functional as F
 from .test_base import TestBase
 
@@ -159,7 +158,6 @@ class TestMplugOwl(TestBase):
 
     def get_icl_prompt(self, question_list, ices, chat_list, incontext_cfg):
         prompts =[]
-        # import ipdb; ipdb.set_trace()
         for question, conv, ice in zip(question_list, chat_list, ices):
             if incontext_cfg['add_sysmsg']:
                 conv.system += incontext_cfg['sysmsg']
@@ -218,7 +216,6 @@ class TestMplugOwl(TestBase):
         images = [get_image(image) for image in image_list]
         images = [self.image_processor(image, return_tensors='pt').pixel_values for image in images]
         images = torch.cat(images, dim=0).to(self.device, dtype=self.dtype)
-        # import ipdb; ipdb.set_trace()
         chat_list = [CONV_VISION.copy() for _ in range(len(question_list))]
         prompts = self.get_icl_prompt(question_list, sample_data, chat_list, incontext_cfg)
         inferencer_type = 'icl_ppl'
@@ -260,9 +257,7 @@ class TestMplugOwl(TestBase):
                     answer_end_indices.append(index + token_len)
                     answer_token_list.append(option_token[0])
                     break
-            if len(answer_start_indices) != len(template_token_list):
-                import ipdb;ipdb.set_trace()
-        assert len(answer_start_indices) == len(answer_list)
+            assert len(answer_start_indices) == len(template_token_list), "tokenizer encode answer in template different from answer only"
         
         inputs = self.processor(text=prompts)
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
@@ -286,9 +281,7 @@ class TestMplugOwl(TestBase):
                     end_indices.append(index + answer_end_indices[i] - 1)
                     target_ids[i,:index - 1] = -1
                     break
-            if len(start_indices) != i+1:
-                import ipdb;ipdb.set_trace()
-        assert len(start_indices) == len(answer_list)
+            assert len(start_indices) == (i+1), "tokenizer encode answer different from answer in conversation"
         
         results = []
         if calib:
