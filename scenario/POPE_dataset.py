@@ -10,7 +10,6 @@ class POPE_COCO_Random_Dataset(Dataset):
         super().__init__()
         json_path = os.path.join(base_data_path,f'coco_pope_random.json')
         self.data = [json.loads(q) for q in open(json_path, 'r')]
-        #self.data = [self.data[54]]*10
     def __len__(self):
         return len(self.data)
     
@@ -24,7 +23,6 @@ class POPE_COCO_Random_Dataset(Dataset):
             'gt_answers': self.data[index]['label'],
             'options': ['Yes', 'No'],
         }
-
         return res_dict
 
 class POPE_COCO_Popular_Dataset(Dataset):
@@ -35,7 +33,6 @@ class POPE_COCO_Popular_Dataset(Dataset):
         super().__init__()
         json_path = os.path.join(base_data_path,f'coco_pope_popular.json')
         self.data = [json.loads(q) for q in open(json_path, 'r')]
-        #self.data = [self.data[15]]*10
     def __len__(self):
         return len(self.data)
     

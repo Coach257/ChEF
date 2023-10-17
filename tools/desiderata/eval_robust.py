@@ -4,10 +4,12 @@ import argparse
 import os
 import numpy as np
 import torch
+import json
 from scenario import dataset_dict
 from tools.evaluator import Evaluator
 # from evaluation import build as build_evaluater
 import datetime
+from tools.desiderata.utils import rand_acc
 
 from torch.utils.data import Subset
 class CustomSubset(Subset):
@@ -44,6 +46,12 @@ def sample_dataset(dataset, sample_len=1000, sample_seed=0):
     return dataset
 
 
+def compute_RRM(origin_acc, crp_acc, dataset_name):
+    rd_acc = rand_acc[dataset_name]['vanilla']
+    return (crp_acc - rd_acc) / (origin_acc - rd_acc) * 100
+    
+
+
 def main():
     args = parse_args()
     if args.device != -1:
@@ -63,9 +71,30 @@ def main():
     # dataset
     scenario_cfg = recipe_cfg['scenario_cfg']
     
-    settings = [(True,False), (False,True), (True,True)]
+    settings = [('ic', True, False), ('tc', False, True), ('ictc', True, True)]
+    dataset_name = scenario_cfg['dataset_name']
+    time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    base_save_dir = os.path.join(save_dir, model_cfg['model_name'],'Robust', dataset_name, time)
+    # origin 
+    scenario_cfg['option_map'] = None
+    dataset = dataset_dict[dataset_name](**scenario_cfg)
+    if args.debug:
+        dataset = sample_dataset(dataset, sample_len=16, sample_seed=0)
+    # save_cfg
+    save_base_dir = os.path.join(base_save_dir, "origin")
+    os.makedirs(save_base_dir, exist_ok=True)
+    with open(os.path.join(save_base_dir, 'config.yaml'), 'w', encoding='utf-8') as f:
+        yaml.dump(data=yaml_dict, stream=f, allow_unicode=True)
+    print(f'Save origin results in {save_base_dir}!')
+    # evaluate
+    eval_cfg = recipe_cfg['eval_cfg']
+    evaluater = Evaluator(dataset, save_base_dir, eval_cfg)
+    evaluater.evaluate(model)
+    origin_save_base_dir = save_base_dir
+
+
     for setting in settings:
-        recipe_cfg['img_crp'], recipe_cfg['text_crp'] = setting
+        recipe_cfg['img_crp'], recipe_cfg['text_crp'] = setting[1], setting[2]
         dataset_name = scenario_cfg['dataset_name']
         dataset = dataset_dict[dataset_name](**scenario_cfg)
         if args.debug:
@@ -73,17 +102,47 @@ def main():
 
         # save_cfg
         time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        save_base_dir = os.path.join(save_dir, model_cfg['model_name'], dataset_name, time)
+        save_base_dir = os.path.join(base_save_dir, f'{dataset_name}_{setting[0]}')
         os.makedirs(save_base_dir, exist_ok=True)
         with open(os.path.join(save_base_dir, 'config.yaml'), 'w', encoding='utf-8') as f:
             yaml.dump(data=yaml_dict, stream=f, allow_unicode=True)
-        print(f'Save results in {save_base_dir}!')
+        print(f'Save {setting[0]} results in {save_base_dir}!')
 
         # evaluate
         eval_cfg = recipe_cfg['eval_cfg']
         evaluater = Evaluator(dataset, save_base_dir, eval_cfg)
         evaluater.evaluate(model)
+    #post processing
+    with open(os.path.join(origin_save_base_dir, 'results.json'),'r') as f:
+        origin_acc = json.load(f)['result']['ACC']
+
+    final_res = [{'img_crp': False, 
+               'text_crp': False, 
+               'dir': origin_save_base_dir, 
+               'Acc': origin_acc, 
+               'RRM': 100,
+               }]
+    for setting in settings:
+        dir = os.path.join(base_save_dir, f'{dataset_name}_{setting[0]}')
+        acc_json_path = os.path.join(dir, 'results.json')
+        with open(acc_json_path,'r') as f:
+            acc_data = json.load(f)
+        acc = acc_data['result']['ACC']
+        #import ipdb;ipdb.set_trace
+        rrm = compute_RRM(origin_acc, acc, dataset_name)
+        res = {'img_crp': setting[1], 
+               'text_crp': setting[2], 
+               'dir': dir, 
+               'Acc': acc, 
+               'RRM': rrm,
+               }
+        print(res)
+        final_res.append(res)
     
+    
+    with open(os.path.join(base_save_dir, 'Robust_Results.json'), 'w', encoding='utf-8') as f:
+            f.write(json.dumps(final_res, indent=4))
+
 
 if __name__ == '__main__':
     main()

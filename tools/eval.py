@@ -6,7 +6,6 @@ import numpy as np
 import torch
 from scenario import dataset_dict
 from tools.evaluator import Evaluator
-# from evaluation import build as build_evaluater
 import datetime
 
 from torch.utils.data import Subset

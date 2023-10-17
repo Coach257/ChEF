@@ -1,4 +1,4 @@
-model: configs/models/llava.yaml
+model: configs/models/llamaadapterv2.yaml
 
 save_dir: results
 

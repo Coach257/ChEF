@@ -8,6 +8,7 @@ class SEEDBenchDataset(Dataset):
     def __init__(self,
                  base_data_path,
                  ppl_cfg = True,
+                 **kwargs
         ):
         self.base_data_path = base_data_path
         self.img_base_path = os.path.join(self.base_data_path, 'SEED-Bench-image')
@@ -43,9 +44,3 @@ class SEEDBenchDataset(Dataset):
         if self.ppl_cfg:
             res_dict['options'] = gt_choices
         return res_dict
-
-
-if __name__ == '__main__':
-    dataset = SEEDBenchDataset(base_data_path='/mnt/petrelfs/shizhelun/shizhelun/data/datasets/SEED-Bench')
-    data = dataset[0]
-    import ipdb;ipdb.set_trace()

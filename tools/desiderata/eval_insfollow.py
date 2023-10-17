@@ -57,7 +57,7 @@ def find_res_json(directory, dataset_name):
                 scienceqa_files.append(file_path)
     return scienceqa_files[0]
 
-def extract_result_json(subdirs,ct=10):
+def extract_result_json(subdirs):
     result_json_list = []
     config_list = []
     acc_list = []
