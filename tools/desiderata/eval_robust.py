@@ -76,7 +76,7 @@ def main():
     time = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     base_save_dir = os.path.join(save_dir, model_cfg['model_name'],'Robust', dataset_name, time)
     # origin 
-    scenario_cfg['option_map'] = None
+    scenario_cfg['img_crp'], scenario_cfg['text_crp'] = False, False
     dataset = dataset_dict[dataset_name](**scenario_cfg)
     if args.debug:
         dataset = sample_dataset(dataset, sample_len=16, sample_seed=0)
@@ -94,7 +94,7 @@ def main():
 
 
     for setting in settings:
-        recipe_cfg['img_crp'], recipe_cfg['text_crp'] = setting[1], setting[2]
+        scenario_cfg['img_crp'], scenario_cfg['text_crp'] = setting[1], setting[2]
         dataset_name = scenario_cfg['dataset_name']
         dataset = dataset_dict[dataset_name](**scenario_cfg)
         if args.debug:
