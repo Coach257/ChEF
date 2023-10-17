@@ -6,7 +6,7 @@ eval_cfg:
   instruction_cfg: 
     query_type: query_pool
     query_assigned_ids: 0
-    template_assigned_ids: 0 # (otter:1) (default:0)
+    template_assigned_ids: 0 # (otter, lamm :1) (default:0)
   inferencer_cfg:
     inferencer_type: PPL
     batch_size: 4

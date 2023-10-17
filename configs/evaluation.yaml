@@ -1,4 +1,4 @@
-model: configs/models/llamaadapterv2.yaml
+model: configs/models/lamm.yaml
 
 save_dir: results
 

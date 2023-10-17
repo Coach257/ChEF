@@ -1,8 +1,11 @@
 scenario_cfg:
-  dataset_name: ScienceQA
-  base_data_path: data/datasets/LAMM/2D_Benchmark
-  ppl: True
-  option_content: False
+  dataset_name: MMBench
+  base_data_path: data/datasets/MMBench
+  ppl_cfg: 
+    content_only: False
+  split: dev
+  hint: True
+  generative: True
 
 eval_cfg:
   instruction_cfg: 
@@ -11,7 +14,7 @@ eval_cfg:
     template_assigned_ids: 0
   inferencer_cfg:
     inferencer_type: PPL
-    batch_size: 8
+    batch_size: 4
     CoT: True
     max_new_tokens: 256
   metric_cfg:
