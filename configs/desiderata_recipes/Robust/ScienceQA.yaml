@@ -15,4 +15,4 @@ eval_cfg:
     CoT: True
     max_new_tokens: 256
   metric_cfg:
-    metric_type: Calibration
+    metric_type: basic

@@ -3,6 +3,8 @@ scenario_cfg:
   base_data_path: data/datasets/MMBench
   ppl_cfg: 
     content_only: False
+  split: dev
+  hint: True
 
 eval_cfg:
   instruction_cfg: 
@@ -11,7 +13,7 @@ eval_cfg:
     template_assigned_ids: 1
   inferencer_cfg:
     inferencer_type: Calibration
-    batch_size: 4
+    batch_size: 8
     CoT: True
     max_new_tokens: 256
   metric_cfg:
