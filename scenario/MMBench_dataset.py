@@ -61,12 +61,12 @@ class MMBenchDataset(Dataset):
         if option_map!=None:
             self.map_type = option_map['type']
             self.map_id = option_map['ids']
-            if self.map_type!='unneutral':
+            if self.map_type!='unnatural':
                 self.option_map=OPTION_MAP[self.map_type][option_map['ids']]
         self.text_crp=text_crp
         self.img_crp=img_crp
-        self.img_c_path = '/mnt/petrelfs/shizhelun/wangzp/data/dataset/mmbench/0/images'
-        self.txt_c = json.load(open('/mnt/petrelfs/shizhelun/wangzp/data/dataset/mmbench/0/MMBench.json', 'rb'))
+        self.img_c_path = 'data/datasets/ChEF_Robust/MMBench_C/images'
+        self.txt_c = json.load(open('data/datasets/ChEF_Robust/MMBench_C/MMBench_C.json', 'rb'))
         self.generative = generative
         self.data = None
 
@@ -135,7 +135,7 @@ class MMBenchDataset(Dataset):
             if self.map_type!=None:
                 map_text = ''
                 map_template='If the answer is "{}", you need to output "{}". '
-                if self.map_type=='unneutral':
+                if self.map_type=='unnatural':
                     if self.map_id==0:
                         option_map = data['options'][1:]+data['options'][:1]
                     else:

@@ -1,0 +1,5 @@
+model: configs/models/mplug.yaml
+
+save_dir: results
+
+recipe: configs/desiderata_recipes/Calibration/ScienceQA.yaml
