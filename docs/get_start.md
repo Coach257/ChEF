@@ -119,7 +119,7 @@ MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robus
 ```shell
 TODO
 ```
-You can also directly download the MMBenc_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+You can also directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
 
 Finally, the dataset should have this structure:
 

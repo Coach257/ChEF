@@ -2,8 +2,29 @@
 
 <div align="center">
     <img src="resources/ChEF-logo.png" width="600"/> <br/>
-     <a href="https://openlamm.github.io/" target="_blank">Paper</a>
+    
 </div>
+<div>
+<div align="center">
+    Zhelun Shi<sup>*,1,2</sup>&emsp;
+    Zhipin Wang<sup>*,1</sup></a>&emsp;
+    Hongxing Fan<sup>*,1</sup></a>&emsp;
+    Zhenfei Yin<sup>2</sup></a>&emsp;
+    Lu Sheng<sup>&#x2709,1</sup></a>&emsp;
+    </br>
+    Jing Shao<sup>2</sup></a>&emsp;
+    Yu Qiao<sup>2</sup></a>
+</div>
+<div>
+<div align="center">
+    <sup>1</sup>Beihang University&emsp;
+    <sup>2</sup>Shanghai AI Lab
+    </br>
+    <sup>*</sup> Equal Contribution&emsp;
+    <sup>&#x2709</sup> Corresponding Author
+    
+</div>
+<a href="https://openlamm.github.io/" target="_blank">Project Page</a> | <a href="https://openlamm.github.io/" target="_blank">ChEF Paper</a> | TODO
 
 ## Introduction
 ChEF is a Comprehensive Evaluation Framework for reliable and indicative assessment of MLLMs, which is highly scalable and can be flexibly modified to adapt to the evaluation of any new model or task.
