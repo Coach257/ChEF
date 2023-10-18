@@ -44,7 +44,7 @@ class ScienceQADataset(Dataset):
         self.base_data_path = base_data_path
         json_path = os.path.join(self.base_data_path, 'meta_file', f'{self.task_name}_{self.dataset_name}.json')
         if text_crp:
-            json_path='data/datasets/ChEF_Robust/ScienceQA_C/VQA_ScienceQA_C.json'
+            json_path='data/datasets/ChEF/ScienceQA_C/VQA_ScienceQA_C.json'
         self.data = json.load(open(json_path, 'rb'))
         self.ppl = ppl  # if true, return positive option and negative options 
         self.option_content = option_content # if true, return [(A) xxx]  instead of (A)
@@ -63,7 +63,7 @@ class ScienceQADataset(Dataset):
             '''
             if self.map_type!='unnatural':
                 self.option_map=OPTION_MAP[self.map_type][option_map['ids']]
-        self.data_c_path = 'data/datasets/ChEF_Robust/ScienceQA_C'
+        self.data_c_path = 'data/datasets/ChEF/ScienceQA_C'
         if img_crp:
             self.base_data_path = self.data_c_path
         self.img_crp=img_crp

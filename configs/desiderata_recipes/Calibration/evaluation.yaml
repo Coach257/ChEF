@@ -1,4 +1,4 @@
-model: configs/models/mplug.yaml
+model: configs/models/llava.yaml
 
 save_dir: results
 
