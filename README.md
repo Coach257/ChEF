@@ -1,7 +1,7 @@
 <br/>
 
 <div align="center">
-    <img src="resources/ChEF-logo.png" width="600"/> <br/>
+    <img src="resources/ChEF-logo.png"/> <br/>
     
 </div>
 <div>
@@ -37,7 +37,7 @@ ChEF decouples the evaluation pipeline into four components:
 - **Metric**: Score functions designed to evaluate the performance of MLLMs. 
 
 With a systematic selection of these four componets, ChEF facilitates
-versatile evaluations in a standardized framework. Users can easily build new evaluations according to new **Recipes** (i.e. specific choices of the four components). ChEF also sets yup several new evaluations to quantify the **desiderata** (desired capabilities) that a competent MLLM model should possess.
+versatile evaluations in a standardized framework. Users can easily build new evaluations according to new **Recipes** (i.e. specific choices of the four components). ChEF also sets up several new evaluations to quantify the **desiderata** (desired capabilities) that a competent MLLM model should possess.
 
 ## News
 

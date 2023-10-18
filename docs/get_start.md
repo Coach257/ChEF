@@ -153,11 +153,11 @@ model: configs/models/lamm.yaml
 
 save_dir: results
 
-recipe: configs/scenario_recipes/ScienceQA/default.yaml
+recipe: configs/scenario_recipes/CIFAR10/default.yaml
 ```
 Run:
 ```shell
-python tools/eval.py configs/evaluation.yaml --debug
+python tools/eval.py configs/evaluation.yaml
 ```
 
 To evaluate the desiderata, see [desiderata.md](desiderata.md) for details.
