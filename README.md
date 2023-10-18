@@ -22,7 +22,7 @@ versatile evaluations in a standardized framework. Users can easily build new ev
 
 📆 [**2023-10-20**] ChEF code is available!
 
-## Scenarios and Models
+## Scenarios and MLLMs
 
 Supported Scenarios:
 <details open>
@@ -41,7 +41,7 @@ Supported Scenarios:
 </details>
 
 
-Supported Models:
+Supported MLLMs:
 > More details can be found in [models.md](docs/models.md).
 
 <details open>
