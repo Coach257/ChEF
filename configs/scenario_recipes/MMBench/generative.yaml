@@ -5,15 +5,13 @@ scenario_cfg:
     content_only: False
   split: dev
   hint: True
-  img_crp: True
-  text_crp: True
-  data_c_path: data/datasets/ChEF/MMBench_C
+  generative: True
 
 eval_cfg:
   instruction_cfg: 
     query_type: query_pool
-    query_assigned_ids: 1 
-    template_assigned_ids: 1
+    query_assigned_ids: 0
+    template_assigned_ids: 0
   inferencer_cfg:
     inferencer_type: PPL
     batch_size: 4

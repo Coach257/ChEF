@@ -1,5 +1,5 @@
-model: configs/models/llava.yaml
+model: configs/models/minigpt4.yaml
 
 save_dir: results
 
-recipe: configs/desiderata_recipes/Calibration/ScienceQA.yaml
+recipe: configs/desiderata_recipes/Calibration/MMBench.yaml
