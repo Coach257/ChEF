@@ -74,6 +74,10 @@ class MMBenchDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
+        # for i in range(len(self.df)):
+        #     if self.df.iloc[i]['index'] == idx:
+        #         idx = i
+        #         break
         index = self.df.iloc[idx]['index']
         image = self.df.iloc[idx]['image']
         if self.img_crp:
