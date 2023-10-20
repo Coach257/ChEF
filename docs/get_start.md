@@ -96,7 +96,7 @@ ChEF
 
 
 ### POPE
-POPE is special labeled COCO dataset for hallucination evaluation. Download [COCO](TODO) and [POPE](TODO).
+POPE is a special labeled COCO dataset for hallucination evaluation based on the validation set of COCO 2014. Download [COCO](https://cocodataset.org/#download)  and [POPE](https://github.com/RUCAIBox/POPE).
 
 The datasets should have this structure:
 
@@ -132,11 +132,13 @@ ChEF
         └── ChEF
             ├── MMBench_C
             |   ├── images
-            |   ├── MMBench_C_info.json
+            |   ├── Image_Corruptions_info.json
+            |   ├── Text_Corruptions_info.json
             |   └── MMBench_C.json
             └── ScienceQA_C
                 ├── sqaimage_images
-                ├── VQA_ScienceQA_C_info.json
+                ├── Image_Corruptions_info.json
+                ├── Text_Corruptions_info.json
                 └── VQA_ScienceQA_C.json
 ```
 ## MLLMs Preparation
