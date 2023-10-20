@@ -51,7 +51,14 @@ def compute_RRM(origin_acc, crp_acc, dataset_name):
     rd_acc = rand_acc[dataset_name]['vanilla']
     return (crp_acc - rd_acc) / (origin_acc - rd_acc) * 100
     
-
+def get_acc(res_dict):
+    acc_keys = ['ACC','vanilla_acc']
+    for acc_key in acc_keys:
+            if acc_key in res_dict:
+                origin_acc = res_dict[acc_key]
+                return origin_acc
+    return 0
+    
 
 def main():
     args = parse_args()
@@ -116,22 +123,28 @@ def main():
         eval_cfg = recipe_cfg['eval_cfg']
         evaluater = Evaluator(dataset, save_base_dir, eval_cfg)
         evaluater.evaluate(model)
+    
     #post processing
+
+    acc_keys = ['ACC','vanilla_acc']
     with open(os.path.join(origin_save_base_dir, 'results.json'),'r') as f:
-        origin_acc = json.load(f)['result']['ACC']
+        res_dict = json.load(f)['result']
+        origin_acc = get_acc(res_dict)
 
     final_res = [{'img_crp': False, 
                'text_crp': False, 
                'dir': origin_save_base_dir, 
                'Acc': origin_acc, 
                'RRM': 100,
+               'RR': 100,
                }]
     for setting in settings:
         dir = os.path.join(base_save_dir, f'{dataset_name}_{setting[0]}')
         acc_json_path = os.path.join(dir, 'results.json')
         with open(acc_json_path,'r') as f:
             acc_data = json.load(f)
-        acc = acc_data['result']['ACC']
+        res_dict = acc_data['result']
+        acc = get_acc(res_dict)
         #import ipdb;ipdb.set_trace
         rrm = compute_RRM(origin_acc, acc, dataset_name)
         res = {'img_crp': setting[1], 
@@ -139,11 +152,14 @@ def main():
                'dir': dir, 
                'Acc': acc, 
                'RRM': rrm,
+               'RR': acc / origin_acc * 100,
                }
-        print(res)
+    
         final_res.append(res)
     
-    
+    for res in final_res:
+        print(res)
+        
     with open(os.path.join(base_save_dir, 'Robust_Results.json'), 'w', encoding='utf-8') as f:
             f.write(json.dumps(final_res, indent=4))
 

@@ -7,6 +7,7 @@ scenario_cfg:
   hint: True
   img_crp: True
   text_crp: True
+  data_c_path: data/datasets/ChEF/MMBench_C
 
 eval_cfg:
   instruction_cfg: 
