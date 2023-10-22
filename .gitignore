@@ -1,5 +1,7 @@
 /results
 data
+data_process/corruption/test
+data_process/corruption/test.ipynb
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

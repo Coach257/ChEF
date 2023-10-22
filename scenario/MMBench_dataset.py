@@ -117,15 +117,17 @@ class MMBenchDataset(Dataset):
         data['gt_choice'] = option_candidate.index(answer) if answer is not None else None
         data['gt_answers'] = options[answer] if answer is not None else None
         if self.text_crp:
-            data['question'] = self.txt_c[idx]["question"].replace("\nOptions: ", f' {self.sys_prompts}\n')
+            data['question'] = self.txt_c[idx]["query"].replace("\nOptions: ", f' {self.sys_prompts}\n')
             data['gt_choices'] = self.txt_c[idx]["gt_choices"]
-            data['gt_answers'] = self.txt_c[idx]["gt_answers"]
+            #data['gt_answers'] = self.txt_c[idx]["gt_answers"]
             data['gt_choice'] = self.txt_c[idx]["gt_choice"]
             options = {
                 option_candidate[idx]: choice for idx,choice in enumerate(data['gt_choices'])
             }
+
             for op in option_candidate:
                 data['question']=data['question'].replace(f' ({op})', f'\n({op})')
+                data['question'].replace(' There are several options:', '\nThere are several options:')
         if self.ppl_cfg:
             option_list = []
             for key, item in options.items():
@@ -151,7 +153,7 @@ class MMBenchDataset(Dataset):
                 #map_text+='\n'
                 data['question']+=map_text
                 data['options']=option_map[:len(data['options'])]
-
+        
         return data
     
     def load_from_df(self, idx, key):

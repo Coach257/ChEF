@@ -114,12 +114,35 @@ ChEF
 ```
 
 ### MMBench_C and ScienceQA_C
-MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robustness evaluation. After download [MMBench](#mmbench-mme-and-seedbench) and ScienceQA from [LAMM](#lamm), run the data procession.
+MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robustness evaluation. 
+We recommend that you directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+
+If you want to generate MMBench_C and ScienceQA_C from the original dataset, run the following data processing commands after downloading [MMBench](#mmbench-mme-and-seedbench) and ScienceQA from [LAMM](#lamm). 
+
+
 
 ```shell
-TODO
+cd data_process/corruption
+conda create -n corruption python=3.10.0
+pip install -r requirements.txt
+
+#for MMBench text/image corruption
+python MMBench_corruption.py  \
+ --data_path /path/to/MMBench  \
+ --save_path /path/to/save  \
+ --corrupt_type text  
+ # --corrupt_type image
+
+#for ScienceQA text/image corruption
+python ScienceQA_corruption.py  \
+ --data_path /path/to/LAMM/2D_Benchmark  \
+ --save_path /path/to/save  \
+ --corrupt_type text  
+ # --corrupt_type image
+
 ```
-You can also directly download the MMBenc_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+Although we fixed random seeds, there are still random factors in the generation process (e.g. results may vary when stylizing text with styleformers), so we still recommend that you download MMBench_C and ScienceQA_C directly rather than generate from scratch.
+
 
 Finally, the dataset should have this structure:
 

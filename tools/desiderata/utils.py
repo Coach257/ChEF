@@ -1,5 +1,5 @@
 mmbench_rand_acc = {'circular': 2.55,
-                    'vanilla': 27.67}
+                    'vanilla': 27.57}
 
 sqa_rand_acc = {'circular': 35.8,
                 'vanilla': 35.8}
