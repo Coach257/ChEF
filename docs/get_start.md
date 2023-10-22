@@ -124,6 +124,7 @@ If you want to generate MMBench_C and ScienceQA_C from the original dataset, run
 ```shell
 cd data_process/corruption
 conda create -n corruption python=3.10.0
+conda activate corruption
 pip install -r requirements.txt
 
 #for MMBench text/image corruption
