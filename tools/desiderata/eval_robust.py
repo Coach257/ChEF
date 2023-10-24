@@ -145,7 +145,6 @@ def main():
             acc_data = json.load(f)
         res_dict = acc_data['result']
         acc = get_acc(res_dict)
-        #import ipdb;ipdb.set_trace
         rrm = compute_RRM(origin_acc, acc, dataset_name)
         res = {'img_crp': setting[1], 
                'text_crp': setting[2], 
