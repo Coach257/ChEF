@@ -76,10 +76,6 @@ class MMBenchDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
-        # for i in range(len(self.df)):
-        #     if self.df.iloc[i]['index'] == idx:
-        #         idx = i
-        #         break
         index = self.df.iloc[idx]['index']
         image = self.df.iloc[idx]['image']
         if self.img_crp:
@@ -121,10 +117,11 @@ class MMBenchDataset(Dataset):
         data['gt_choice'] = option_candidate.index(answer) if answer is not None else None
         data['gt_answers'] = options[answer] if answer is not None else None
         if self.text_crp:
-            data['question'] = self.txt_c[idx]["question"].replace("\nOptions: ", f' {self.sys_prompts}\n')
+            data['question'] = self.txt_c[idx]["query"].replace("\nOptions: ", f' {self.sys_prompts}\n')
             data['gt_choices'] = self.txt_c[idx]["gt_choices"]
-            data['gt_answers'] = self.txt_c[idx]["gt_answers"]
             data['gt_choice'] = self.txt_c[idx]["gt_choice"]
+            data['gt_answers'] = data['gt_answers'][data['gt_choice']]
+            
             options = {
                 option_candidate[idx]: choice for idx,choice in enumerate(data['gt_choices'])
             }
@@ -167,4 +164,3 @@ class MMBenchDataset(Dataset):
 if __name__ == '__main__':
     dataset = MMBenchDataset(base_data_path='data/datasets/MMBench', split='dev', hint=True, ppl_cfg = dict(content_only = False), generative=True)
     data = dataset[0]
-    import ipdb;ipdb.set_trace()
