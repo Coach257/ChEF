@@ -165,7 +165,7 @@ def text_corruption(args):
         #option
 
         c_or_r = random.choice(['circular_option','reverse_option'])
-        text, gt_choices, gt_choice = d_option[c_or_r](text, sample['gt_choices'], sample['gt_choice'], context, 'Question:','Options:')
+        text, gt_choices, gt_choice = d_option[c_or_r](text, sample['gt_choices'], sample['gt_choice'], context, opt_pr='Options:')
         sample_info['crps'].append({"level": "option",
                             "method": c_or_r,
                             "severity": 1})
