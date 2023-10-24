@@ -77,7 +77,7 @@ class ICL_PPL_inferencer(Direct_inferencer):
                 answer_dict['query'] = icl_prompts[icl_prompt_idx]
                 answer_dict['ppl_results'] = ppl_results.tolist()
                 answer_dict['ices'] = ices[icl_prompt_idx]
-                if not isinstance(ices[icl_prompt_idx][0]['image_path'], str):
+                if ices[icl_prompt_idx] !=[] and not isinstance(ices[icl_prompt_idx][0]['image_path'], str):
                     for i in range(len(ices[icl_prompt_idx])):
                         del answer_dict['ices'][i]['image_path']
                 if self.CoT:

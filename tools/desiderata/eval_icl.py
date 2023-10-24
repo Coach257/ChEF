@@ -86,7 +86,7 @@ def main():
     if model_cfg['model_name'] in ['MiniGPT-4', 'mPLUG-Owl', 'Otter', 'Kosmos2']:
         recipe_cfg['eval_cfg']['instruction_cfg']['incontext_cfg']['ice_with_image'] = True
     
-    ice_nums = [1, 2, 3]
+    ice_nums = [0, 1, 2, 3]
     results = []
     results_path = []
     for ice_num in ice_nums:
@@ -105,7 +105,7 @@ def main():
     acc_icl_average = sum(results[1:])/len(results[1:])
     acc_rand = rand_acc[dataset_name]['vanilla']
 
-    RIAM = (acc_icl_average - results[0]) / (results[0] - acc_rand)
+    RIAM = ((acc_icl_average - results[0]) / (results[0] - acc_rand)) * 50 + 50
     with open(os.path.join(save_base_dir, 'results.json'), 'w', encoding='utf-8') as f:
         all_results = []
         for i in range(len(results)):
