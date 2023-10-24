@@ -48,7 +48,7 @@ In ChEF, you can employ your own custom models by following these steps. This gu
 2.2. In this file, you will need to inherit from the `TestBase` class defined in [test_base.py](../models/test_base.py). The `TestBase` class provides a set of interfaces that you should implement for testing your model. 
 
 ### Step 3: Test Your Model
-3.1. Add your model in [__init__.py](../models/__init__.py)
+3.1. Add your model in [`__init__.py`](../models/__init__.py)
 
 3.2 Prepare your model configuration in [configs/models](../configs/models/)
 
