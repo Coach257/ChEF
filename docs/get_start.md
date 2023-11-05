@@ -24,16 +24,14 @@ The datasets should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        └── LAMM
-            └── 2D_Benchmark
-                ├── cifar10_images
-                ├── flickr30k_images
-                ├── fsc147_images
-                ├── meta_file
-                ├── sqaimage_images
-                └── voc2012_images
+    └── LAMM
+        └── 2D_Benchmark
+            ├── cifar10_images
+            ├── flickr30k_images
+            ├── fsc147_images
+            ├── meta_file
+            ├── sqaimage_images
+            └── voc2012_images
 ```
 
 ### Omnibenchmark
@@ -45,11 +43,9 @@ The dataset should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        ├── Omnibenchmark_raw
-        └── Bamboo
-            └── sensexo_visual_add_academic_add_state_V4.visual.json
+    ├── Omnibenchmark_raw
+    └── Bamboo
+        └── sensexo_visual_add_academic_add_state_V4.visual.json
 ```
 
 We sampled and labeled Omnibenchmark meticulously by using
@@ -66,14 +62,12 @@ Finally, the dataset should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        ├── ChEF
-        |   └── Omnibenchmark_Bamboo
-        |       ├── meta_file
-        |       └── omnibenchmark_images
-        └── Bamboo
-            └── sensexo_visual_add_academic_add_state_V4.visual.json
+    ├── ChEF
+    |   └── Omnibenchmark_Bamboo
+    |       ├── meta_file
+    |       └── omnibenchmark_images
+    └── Bamboo
+        └── sensexo_visual_add_academic_add_state_V4.visual.json
 ```
 
 ### MMBench, MME and SEEDBench
@@ -85,13 +79,11 @@ The datasets should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        ├── MMBench
-        |   ├── mmbench_dev_20230712.tsv
-        |   └── mmbench_test_20230712.tsv
-        ├── MME_Benchmark_release_version
-        └── SEED-Bench
+    ├── MMBench
+    |   ├── mmbench_dev_20230712.tsv
+    |   └── mmbench_test_20230712.tsv
+    ├── MME_Benchmark_release_version
+    └── SEED-Bench
 ```
 
 
@@ -104,22 +96,44 @@ The datasets should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        └── coco_pope
-            ├── val2014
-            ├── coco_pope_adversarial.json
-            ├── coco_pope_popular.json
-            └── coco_pope_random.json
+    └── coco_pope
+        ├── val2014
+        ├── coco_pope_adversarial.json
+        ├── coco_pope_popular.json
+        └── coco_pope_random.json
 ```
 
 ### MMBench_C and ScienceQA_C
-MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robustness evaluation. After download [MMBench](#mmbench-mme-and-seedbench) and ScienceQA from [LAMM](#lamm), run the data procession.
+MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robustness evaluation. 
+We recommend that you directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+
+If you want to generate MMBench_C and ScienceQA_C from the original dataset, run the following data processing commands after downloading [MMBench](#mmbench-mme-and-seedbench) and ScienceQA from [LAMM](#lamm). 
+
+
 
 ```shell
-TODO
+cd data_process/corruption
+conda create -n corruption python=3.10.0
+conda activate corruption
+pip install -r requirements.txt
+
+#for MMBench text/image corruption
+python MMBench_corruption.py  \
+ --data_path /path/to/MMBench  \
+ --save_path /path/to/save  \
+ --corrupt_type text  
+ # --corrupt_type image
+
+#for ScienceQA text/image corruption
+python ScienceQA_corruption.py  \
+ --data_path /path/to/LAMM/2D_Benchmark  \
+ --save_path /path/to/save  \
+ --corrupt_type text  
+ # --corrupt_type image
+
 ```
-You can also directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+Although we fixed random seeds, there are still random factors in the generation process (e.g. results may vary when stylizing text with styleformers), so we still recommend that you download MMBench_C and ScienceQA_C directly rather than generate from scratch.
+
 
 Finally, the dataset should have this structure:
 
@@ -127,19 +141,17 @@ Finally, the dataset should have this structure:
 ChEF
 ├── configs
 └── data
-    ├── checkpoints
-    └── datasets
-        └── ChEF
-            ├── MMBench_C
-            |   ├── images
-            |   ├── Image_Corruptions_info.json
-            |   ├── Text_Corruptions_info.json
-            |   └── MMBench_C.json
-            └── ScienceQA_C
-                ├── sqaimage_images
-                ├── Image_Corruptions_info.json
-                ├── Text_Corruptions_info.json
-                └── VQA_ScienceQA_C.json
+    └── ChEF
+        ├── MMBench_C
+        |   ├── images
+        |   ├── Image_Corruptions_info.json
+        |   ├── Text_Corruptions_info.json
+        |   └── MMBench_C.json
+        └── ScienceQA_C
+            ├── sqaimage_images
+            ├── Image_Corruptions_info.json
+            ├── Text_Corruptions_info.json
+            └── VQA_ScienceQA_C.json
 ```
 ## MLLMs Preparation
 
@@ -147,19 +159,13 @@ See [models.md](models.md) for details.
 
 ## Evaluation
 
-We provide several recipes and model configs in ChEF/configs. Define the model, save_dir, and recipe in [evaluation.yaml](../configs/evaluation.yaml)
-
-For example, to evaluate [LAMM](https://github.com/OpenLAMM/LAMM) on CIFAR10 using the default recipe: 
-```yaml
-model: configs/models/lamm.yaml
-
-save_dir: results
-
-recipe: configs/scenario_recipes/CIFAR10/default.yaml
-```
-Run:
+We provide several recipes and model configs in ChEF/configs. 
+For example, to evaluate [LAMM](https://github.com/OpenLAMM/LAMM) on CIFAR10 using the default recipe, 
+run:
 ```shell
-python tools/eval.py configs/evaluation.yaml
+python eval.py \
+    --model_cfg configs/models/lamm.yaml \
+    --recipe_cfg configs/scenario_recipes/CIFAR10/default.yaml
 ```
 
 To evaluate the desiderata, see [desiderata.md](desiderata.md) for details.
