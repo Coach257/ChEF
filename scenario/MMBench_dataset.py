@@ -43,7 +43,7 @@ class MMBenchDataset(Dataset):
                  text_crp=False,
                  img_crp=False,
                  generative=False,
-                 data_c_path = 'data/datasets/ChEF/MMBench_C',
+                 data_c_path = 'data/ChEF/MMBench_C',
                  **kwargs
         ):
         self.df = pd.read_csv(os.path.join(base_data_path, f'mmbench_{split}_20230712.tsv'), sep='\t')
@@ -160,5 +160,5 @@ class MMBenchDataset(Dataset):
             return None
 
 if __name__ == '__main__':
-    dataset = MMBenchDataset(base_data_path='data/datasets/MMBench', split='dev', hint=True, ppl_cfg = dict(content_only = False), generative=True)
+    dataset = MMBenchDataset(base_data_path='data/MMBench', split='dev', hint=True, ppl_cfg = dict(content_only = False), generative=True)
     data = dataset[0]

@@ -1,6 +1,6 @@
 scenario_cfg:
   dataset_name: ScienceQA
-  base_data_path: data/datasets/LAMM/2D_Benchmark
+  base_data_path: data/LAMM/2D_Benchmark
   ppl: True
   option_content: False
   option_map: ''
@@ -9,8 +9,8 @@ scenario_cfg:
 eval_cfg:
   instruction_cfg: 
     query_type: query_pool
-    query_assigned_ids: 0 # otter 1
-    template_assigned_ids: 0 # otter 1
+    query_assigned_ids: 0 # (default: 0) (otter: 1)
+    template_assigned_ids: 0 # (default: 0) (otter: 1)
   inferencer_cfg:
     inferencer_type: PPL
     batch_size: 8

@@ -6,7 +6,7 @@ class FlickrDataset(Dataset):
     task_name = 'caption'
     dataset_name = 'Flickr30k'
     def __init__(self, 
-                 base_data_path = 'data/datasets/LAMM//2D_Benchmark/',
+                 base_data_path = 'data/LAMM//2D_Benchmark/',
                  ppl_cfg = None,
                  **kwargs):
         self.base_data_path = base_data_path

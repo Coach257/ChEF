@@ -29,7 +29,6 @@ def compute_ECE(answers, num_bins=10):
             cur_bin_accs = []
             if cur_bin_id==plus_max_id+1:
                 cur_bin_max-=1
-    
     assert total == len(answers)
     ece = ece / len(answers)
     return dict(

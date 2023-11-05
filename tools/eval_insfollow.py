@@ -1,48 +1,10 @@
-from models import get_model
-import yaml
-import argparse
-import os
-import numpy as np
-import torch
-import json
-from scenario import dataset_dict
-from tools.evaluator import Evaluator
-# from evaluation import build as build_evaluater
 import datetime
-
-from torch.utils.data import Subset
-class CustomSubset(Subset):
-    '''A custom subset class'''
-    def __init__(self, dataset, indices):
-        super().__init__(dataset, indices)
-        self.task_name = dataset.task_name
-        self.dataset_name = dataset.dataset_name
-        self.data = dataset.data
-
-
-def load_yaml(cfg_path):
-    with open(cfg_path, 'r', encoding='utf-8') as f:
-        result = yaml.load(f.read(), Loader=yaml.FullLoader)
-    return result
-
-def parse_args():
-    parser = argparse.ArgumentParser(description="Evaluation")
-    parser.add_argument("cfg_path", type=str)
-    parser.add_argument("--device", type=int, default=-1)
-    parser.add_argument("--debug", action="store_true")
-    args = parser.parse_args()
-    return args
-
-def sample_dataset(dataset, sample_len=1000, sample_seed=0):
-    if sample_len == -1:
-        return dataset
-    if len(dataset) > sample_len:
-        np.random.seed(sample_seed)
-        random_indices = np.random.choice(
-            len(dataset), sample_len, replace=False
-        )
-        dataset = CustomSubset(dataset, random_indices)
-    return dataset
+import os
+import yaml
+import json
+from models import get_model
+from scenario import dataset_dict
+from tools.evaluator import Evaluator, load_config, sample_dataset
 
 def find_res_json(directory, dataset_name):
     scienceqa_files = []
@@ -56,29 +18,6 @@ def find_res_json(directory, dataset_name):
                 file_path = os.path.join(root, file)
                 scienceqa_files.append(file_path)
     return scienceqa_files[0]
-
-def extract_result_json(subdirs):
-    result_json_list = []
-    config_list = []
-    acc_list = []
-    cnt=0
-    for subdir in subdirs:
-        result_json_path = os.path.join(subdir, 'results.json')
-        cfg_path = os.path.join(subdir, 'config.yaml')
-        if cnt>=ct:
-            return result_json_list,config_list,acc_list
-        if os.path.exists(result_json_path):
-            with open(result_json_path, 'r') as json_file:
-                acc_data=json.load(json_file)
-                acc_list.append(acc_data[0]['result'])
-            result_json_path=find_res_json(subdir)
-            with open(result_json_path, 'r') as json_file:
-                result_data = json.load(json_file)
-                result_json_list.append(result_data)
-            config_list.append(load_yaml(cfg_path))
-            cnt+=1
-
-    return result_json_list, config_list, acc_list
 
 def compute_MR(origin, target):
     mct, total = 0, 0
@@ -105,17 +44,7 @@ def compute_MR(origin, target):
     return mct/total*100
 
 def main():
-    args = parse_args()
-    if args.device != -1:
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(args.device)
-
-    # config
-    yaml_dict = load_yaml(args.cfg_path)
-    model_cfg_path = yaml_dict['model']
-    save_dir = yaml_dict['save_dir']
-    recipe_cfg_path = yaml_dict['recipe']
-    model_cfg = load_yaml(model_cfg_path)
-    recipe_cfg = load_yaml(recipe_cfg_path)
+    model_cfg, recipe_cfg, save_dir, sample_len = load_config()
 
     # model
     model = get_model(model_cfg)
@@ -129,13 +58,12 @@ def main():
     # origin 
     scenario_cfg['option_map'] = None
     dataset = dataset_dict[dataset_name](**scenario_cfg)
-    if args.debug:
-        dataset = sample_dataset(dataset, sample_len=16, sample_seed=0)
+    dataset = sample_dataset(dataset, sample_len=sample_len, sample_seed=0)
     # save_cfg
     save_base_dir = os.path.join(base_save_dir, "origin")
     os.makedirs(save_base_dir, exist_ok=True)
     with open(os.path.join(save_base_dir, 'config.yaml'), 'w', encoding='utf-8') as f:
-        yaml.dump(data=yaml_dict, stream=f, allow_unicode=True)
+        yaml.dump(data=dict(model_cfg=model_cfg, recipe_cfg=recipe_cfg), stream=f, allow_unicode=True)
     print(f'Save origin results in {save_base_dir}!')
     # evaluate
     eval_cfg = recipe_cfg['eval_cfg']
@@ -149,14 +77,13 @@ def main():
                 }
         scenario_cfg['option_map'] = ins_dict
         dataset = dataset_dict[dataset_name](**scenario_cfg)
-        if args.debug:
-            dataset = sample_dataset(dataset, sample_len=16, sample_seed=0)
+        dataset = sample_dataset(dataset, sample_len=sample_len, sample_seed=0)
         # save_cfg
         save_base_dir = os.path.join(base_save_dir, f"{setting[0]}_{setting[1]}")
         os.makedirs(save_base_dir, exist_ok=True)
 
         with open(os.path.join(save_base_dir, 'config.yaml'), 'w', encoding='utf-8') as f:
-            yaml.dump(data=yaml_dict, stream=f, allow_unicode=True)
+            yaml.dump(data=dict(model_cfg=model_cfg, recipe_cfg=recipe_cfg), stream=f, allow_unicode=True)
         print(f'Save {setting[0]}_{setting[1]} results in {save_base_dir}!')
 
         # evaluate
@@ -187,17 +114,14 @@ def main():
 
     avg_acc, avg_mr = 0, 0
     for type,accs in types_accs.items():
-        tmp = 0
         for acc in accs:
-            tmp+=acc
-        avg_acc+=tmp/len(accs)
-    avg_acc/=3
+            avg_acc+=acc
+    avg_acc/=len(settings)
+
     for type,mrs in types_mrs.items():
-        tmp = 0
         for mr in mrs:
-            tmp+=mr
-        avg_mr+=tmp/len(mrs)
-    avg_mr/=3
+            avg_mr+=mr
+    avg_mr/=len(settings)
     
     print(f'weighted_avg_MR: {avg_mr}, weighted_avg_Acc: {avg_acc}')
     final_res = {

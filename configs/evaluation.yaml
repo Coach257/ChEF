@@ -1,5 +1,0 @@
-model: configs/models/lamm.yaml
-
-save_dir: results
-
-recipe: configs/scenario_recipes/ScienceQA/default.yaml

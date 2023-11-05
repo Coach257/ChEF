@@ -50,7 +50,7 @@ class LlavaMPTModel(MPTModel):
         if hasattr(config, "mm_vision_tower"):
             # HACK: for FSDP
             # self.vision_tower = [CLIPVisionModel.from_pretrained(config.mm_vision_tower)]
-            self.vision_tower = [CLIPVisionModel.from_pretrained('data/checkpoints/clip-vit-large-patch14')]
+            self.vision_tower = [CLIPVisionModel.from_pretrained('model_zoo/clip-vit-large-patch14')]
             # self.vision_tower = CLIPVisionModel.from_pretrained(config.mm_vision_tower)
 
         if hasattr(config, "use_mm_proj"):

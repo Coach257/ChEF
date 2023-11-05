@@ -45,7 +45,7 @@ class ScienceQADataset(Dataset):
     dataset_name = 'ScienceQA'
 
     def __init__(self, base_data_path, ppl = False, option_content = False, option_map=None, img_crp=False, text_crp=False,split='31', generative = False, 
-                  data_c_path = 'data/datasets/ChEF/ScienceQA_C', **kwargs):
+                  data_c_path = 'data/ChEF/ScienceQA_C', **kwargs):
         self.base_data_path = base_data_path
         json_path = os.path.join(self.base_data_path, 'meta_file', f'{self.task_name}_{self.dataset_name}.json')
         if text_crp:
@@ -121,5 +121,5 @@ class ScienceQADataset(Dataset):
 
 
 if __name__ == '__main__':
-    dataset = ScienceQADataset(base_data_path='data/datasets/LAMM/2D_Benchmark', ppl=True, generative=True)
+    dataset = ScienceQADataset(base_data_path='data/LAMM/2D_Benchmark', ppl=True, generative=True)
     data = dataset[0]

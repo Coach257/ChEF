@@ -192,7 +192,7 @@ def eval_cost(response_list):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base-data-path', default='data/datasets/LAMM/2D_Benchmark/meta_file/VQA_ScienceQA.json')
+    parser.add_argument('--base-data-path', default='data/LAMM/2D_Benchmark/meta_file/VQA_ScienceQA.json')
     parser.add_argument('--answer-path')
     parser.add_argument('--response-dir', default='results/gpt_eval')
     args = parser.parse_args()

@@ -1,12 +1,14 @@
 scenario_cfg:
   dataset_name: POPE_COCO_popular
-  base_data_path: data/datasets/coco_pope
+  base_data_path: data/coco_pope
   ppl: True
   option_content: False
 
 eval_cfg:
   instruction_cfg: 
-    query_type: standard_query
+    query_type: query_pool
+    prompt_assigned_ids: 0
+    template_assigned_ids: 0 # shikra: 1
   inferencer_cfg:
     inferencer_type: PPL
     batch_size: 8
