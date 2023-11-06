@@ -12,8 +12,9 @@
     Zhenfei Yin<sup>2</sup></a>&emsp;
     Lu Sheng<sup>&#x2709,1</sup></a>&emsp;
     </br>
-    Jing Shao<sup>2</sup></a>&emsp;
-    Yu Qiao<sup>2</sup></a>
+    Yu Qiao<sup>2</sup></a>&emsp;
+    Jing Shao<sup>&#x2709,2</sup></a>
+    
 </div>
 <div>
 <div align="center">
@@ -43,7 +44,10 @@ versatile evaluations in a standardized framework. Users can easily build new ev
 
 ## News
 
-📆 [**2023-10-20**] ChEF code is available!
+
+📆 [**2023-11**] 
+1. ChEF code is available!
+2. ChEF is now merged to [LAMM](https://openlamm.github.io/). We will maintain the code in [LAMM](https://github.com/OpenLAMM/LAMM).
 
 ## Scenarios and MLLMs
 
