@@ -10,7 +10,7 @@ pip install -r requirements/run.txt
 ## Data Preparation
 
 ### LAMM
-Download LAMM 2D Benchmark datasets. More details are in [LAMM](https://github.com/OpenLAMM/LAMM). 
+Download LAMM 2D Benchmark datasets. More details are in [LAMM](https://github.com/OpenGVLab/LAMM). 
 
 - CIFAR10
 - Flickr30k
@@ -54,7 +54,7 @@ a hierarchical chain of categories, facilitated by the Bamboo label system.
 python data_process/Omnibenchmark.py
 ```
 
-You can also directly download the labeled Omnibenchmark dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+You can also directly download the labeled Omnibenchmark dataset from [OpenXLab](https://openxlab.org.cn/datasets/LAMM/ChEF/tree/main/ChEF/OmniBenchmark_Bamboo).
 
 Finally, the dataset should have this structure:
 
@@ -105,7 +105,7 @@ ChEF
 
 ### MMBench_C and ScienceQA_C
 MMBench_C and ScienceQA_C are datasets with image and text corruptions fot robustness evaluation. 
-We recommend that you directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets?lang=zh-CN). # TODO
+We recommend that you directly download the MMBench_C and ScienceQA_C dataset from [OpenXLab](https://openxlab.org.cn/datasets/LAMM/ChEF/tree/main/ChEF).
 
 If you want to generate MMBench_C and ScienceQA_C from the original dataset, run the following data processing commands after downloading [MMBench](#mmbench-mme-and-seedbench) and ScienceQA from [LAMM](#lamm). 
 

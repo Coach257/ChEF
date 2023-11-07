@@ -27,7 +27,7 @@
 </div>
 
 
-**Official Repository of [CHEF: A COMPREHENSIVE EVALUATION FRAMEWORK FOR STANDARDIZED ASSESSMENT OF MULTIMODAL LARGE LANGUAGE MODEL](https://openlamm.github.io/)**
+**Official Repository of [CHEF: A COMPREHENSIVE EVALUATION FRAMEWORK FOR STANDARDIZED ASSESSMENT OF MULTIMODAL LARGE LANGUAGE MODEL](https://arxiv.org/abs/2311.02692)**
 
 ## Introduction
 ChEF is a Comprehensive Evaluation Framework for reliable and indicative assessment of MLLMs, which is highly scalable and can be flexibly modified to adapt to the evaluation of any new model or task.
@@ -47,7 +47,7 @@ versatile evaluations in a standardized framework. Users can easily build new ev
 
 📆 [**2023-11**] 
 1. ChEF code is available!
-2. ChEF is now merged to [LAMM](https://openlamm.github.io/). We will maintain the code in [LAMM](https://github.com/OpenLAMM/LAMM).
+2. ChEF is now merged to [LAMM](https://openlamm.github.io/). We will maintain the code in [OpenGVLab/LAMM](https://github.com/OpenGVLab/LAMM).
 
 ## Scenarios and MLLMs
 
@@ -97,5 +97,12 @@ The project is CC BY NC 4.0 (allowing only non-commercial use) and models traine
 ## Citation
 
 ```bibtex
-TODO
+@misc{shi2023chef,
+      title={ChEF: A Comprehensive Evaluation Framework for Standardized Assessment of Multimodal Large Language Models}, 
+      author={Zhelun Shi and Zhipin Wang and Hongxing Fan and Zhenfei Yin and Lu Sheng and Yu Qiao and Jing Shao},
+      year={2023},
+      eprint={2311.02692},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
 ```
